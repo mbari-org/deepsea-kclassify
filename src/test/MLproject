@@ -1,0 +1,34 @@
+name: avedac-kclassify
+
+docker_env:
+  image:  mbari/avedac-gpu-kclassify
+  volumes:  ["$PWD/.env:/.env"]
+  environment: [["ENV", "/.env"]]
+
+entry_points:
+  main:
+    parameters:
+      train_tar: {type: string, default: "s3://testdata/catsdogstrain.tar.gz"}
+      val_tar: {type: string, default: "s3://testdata/catsdogstest.tar.gz"}
+      notes:  {type: string, default: "test catsdogs"}
+      base_model:  {type: string, default: "vgg16"}
+      augment_range: {type: int, default: 0.2}
+      horizontal_flip: {type: string, default: "False"}
+      vertical_flip: {type: string, default: "False"}
+      early_stop: {type: string, default: "False"}
+      batch_size: {type: int, default: 32}
+      epochs: {type: int, default: 1}
+      k: {type:int, default: 1}
+      loss: {type:string, default: "categorical_crossentropy"}
+      shear_range:  {type: float, default: 32}
+      optimizer:  {type: string, default: "ranger"}
+      balance_data: {type: string, default: "False"}
+      lr:  {type:float, default: .01}
+      l2_weight_decay_alpha:  {type:float, default: 0.0}
+
+    command: "python /app/train.py --train_tar {train_tar} --val_tar {val_tar} --base_model {base_model} \
+    --epochs={epochs} --augment_range {augment_range} --horizontal_flip {horizontal_flip} \
+    --vertical_flip {vertical_flip} --early_stop {early_stop} --batch_size {batch_size}  --epochs {epochs} \
+    --k {k} --loss {loss} --shear_range {shear_range} --optimizer {optimizer} --balance_data {balance_data} \
+    --lr {lr} --l2_weight_decay_alpha {l2_weight_decay_alpha}"
+

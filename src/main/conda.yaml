@@ -1,0 +1,23 @@
+name: mlflow-kerasclassifier
+channels:
+  - defaults
+  - anaconda
+dependencies:
+  - python==3.6
+  - pip:
+    - mlflow==0.9.0
+    - nose==3.7.0
+    - nose-pycreds==0.4.0
+    - numpy==1.14.3
+    - Cython==0.28.2
+    - pycocotools==2.0.0
+    - absl-py==0.7.0
+    - pandas=0.22.0
+    - matplotlib==2.2.2
+    - opencv-python==3.4.2.17
+    - wandb==0.8.9
+    - pillow==6.0.0
+    - boto3==1.9.171
+    - scikit-learn==0.21.2
+    - nose==4.0.2
+    - imblearn==0.0
