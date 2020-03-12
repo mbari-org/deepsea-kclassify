@@ -97,16 +97,17 @@ class Train():
         else:
             monitor = 'val_binary_accuracy'
 
-        metrics = Metrics(labels=list(labels.keys()), val_data=validation_generator, batch_size=batch_size)
         early = Stopping(monitor=monitor, patience=3, verbose=1, restore_best_weights=True)
         checkpoint_path = '{}/checkpoints.best.h5'.format(output_dir)
         checkpoint = ModelCheckpoint(checkpoint_path, monitor=monitor, verbose=1, save_best_only=True, mode='max')
+        callbacks = [tensorboard, checkpoint]
         if early_stop:
-            callbacks = [tensorboard, metrics, early, checkpoint]
-        else:
-            callbacks = [tensorboard, metrics, checkpoint]
+            callbacks += early
         if has_wandb:
-            callbacks += WandbCallback(save_model=False, data_type="image", validation_data=validation_generator, labels=list(labels.keys()))
+            metrics = Metrics(labels=list(labels.keys()), val_data=validation_generator, batch_size=batch_size)
+            wandb = WandbCallback(save_model=False, data_type="image", validation_data=validation_generator, labels=list(labels.keys()))
+            callbacks += [metrics, wandb]
+
         if os.path.exists(checkpoint_path):
             print('Loading model weights from {}'.format(checkpoint_path))
             model.load_weights(checkpoint_path)
@@ -121,7 +122,7 @@ class Train():
         if early_stop:
             best_epoch = early.best_epoch
         else:
-            best_epoch = len(history.history) - 1
+            best_epoch = min(0, len(history.history) - 1)
         return history, model, best_epoch
 
     def get_binary_loss(self, hist):
@@ -411,9 +412,9 @@ def log_metrics(train_output, image_dir):
             wandb.config.update({"best_val_categorical_accuracy": acc[train_output.best_epoch]})
     else:
         acc = train_output.history.history['val_binary_accuracy']
+        mlflow.log_metric("best_val_binary_accuracy", acc[train_output.best_epoch])
         if has_wandb:
-            mlflow.log_metric("best_val_binary_accuracy", acc[train_output.best_epoch])
-        wandb.config.update({"best_val_binary_accuracy": acc[train_output.best_epoch]})
+            wandb.config.update({"best_val_binary_accuracy": acc[train_output.best_epoch]})
 
 def log_artifacts(train_output, image_dir,  output_dir):
     # log generated plots to images directory

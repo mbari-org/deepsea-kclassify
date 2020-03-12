@@ -1,15 +1,10 @@
 name: avedac-kclassify
 
-docker_env:
-  image:  mbari/avedac-gpu-kclassify
-  volumes:  ["$PWD/.env:/.env"]
-  environment: [["ENV", "/.env"]]
-
 entry_points:
   main:
     parameters:
-      train_tar: {type: string, default: "s3://testdata/catsdogstrain.tar.gz"}
-      val_tar: {type: string, default: "s3://testdata/catsdogstest.tar.gz"}
+      train_tar: {type: string, default: "s3://test/catsdogstrain.tar.gz"}
+      val_tar: {type: string, default: "s3://test/catsdogsval.tar.gz"}
       notes:  {type: string, default: "test catsdogs"}
       base_model:  {type: string, default: "vgg16"}
       augment_range: {type: int, default: 0.2}

@@ -37,7 +37,7 @@ learning rate,  batch size, etc.
 Results are stored in a [MLFlow](https://github.com/mlflow/mlflow) tracking server and optionally in the
  [Wandb](http://wandb.com) service. 
 
-Following training, you should see results in a locally running mlfow server at http://127.0.0.1:5000, e.g.
+Following training, you should see results in a locally running mlfow server at http://127.0.0.1:5001, e.g.
 
 Organized by experiment
 ![ Image link ](/doc/img/mlflow_exp.jpg)

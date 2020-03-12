@@ -7,20 +7,24 @@ services:
     env_file:
       - test.env
     ports:
-      - '9000:9000'
+      - '9001:9000'
+    volumes:
+      - data:/data
     command: server /data
     networks:
-      - mlflow-network
+      - kclassify-network
   mlflowserver:
     build: mlflow
     container_name: mlflowserver
     env_file:
       - test.env
     ports:
-      - '5000:5000'
-    command: mlflow server --default-artifact-root s3://test --host mlflowserver
+      - '5001:5000'
+    volumes:
+      - tracking:/tracking
+    command: mlflow server --backend-store-uri /tracking --default-artifact-root s3://test --host mlflowserver
     networks:
-      - mlflow-network
+      - kclassify-network
     depends_on:
       - minioserver
   nosetests:
@@ -29,13 +33,16 @@ services:
     env_file:
       - test.env
     volumes:
-      - .:/src/test-
-      - ../../data:/data
-    command: "bash -c 'cd /src/test && nosetests test.py'"
+      - ./:/test
+      - ../../data:/data 
+    command: "bash -c 'cd /test && nosetests nose_test.py'"
     networks:
-      - mlflow-network
+      - kclassify-network
     depends_on:
       - mlflowserver
 networks:
-  mlflow-network:
-    name: mlflowservernet
+  kclassify-network:
+    name: kclassifynet
+volumes:
+  data:
+  tracking:

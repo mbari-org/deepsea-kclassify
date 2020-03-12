@@ -1,4 +1,5 @@
-FROM python:3.6
-
+FROM mbari/avedac-gpu-kclassify
+USER root
 ADD requirements.txt .
-RUN pip3 install -r requirements.txt
+RUN pip install -r requirements.txt
+USER docker_user

@@ -22,18 +22,41 @@ import boto3
 from botocore.client import Config
 import botocore
 import util
+import threading
+import sys
+import mlflow
+from boto3.s3.transfer import TransferConfig
 from nose import with_setup
 from subprocess import Popen
 from dotenv import load_dotenv
+from urllib.parse import urlparse
 
 print("")  # this is to get a newline after the dots
 # directory this code is in
 test_dir = os.path.dirname(os.path.abspath(__file__))
+
 # this loads in all environmental and configuration variables
-#load_dotenv(dotenv_path=os.path.join(test_dir,'test.env'))
 load_dotenv(dotenv_path='/src/test/test.env')
 
-print(os.environ)
+
+class ProgressPercentage(object):
+    def __init__(self, filename):
+        self._filename = filename
+        self._size = float(os.path.getsize(filename))
+        self._seen_so_far = 0
+        self._lock = threading.Lock()
+
+    def __call__(self, bytes_amount):
+        # To simplify we'll assume this is hooked up
+        # to a single filename.
+        with self._lock:
+            self._seen_so_far += bytes_amount
+            percentage = (self._seen_so_far / self._size) * 100
+            sys.stdout.write(
+                "\r%s  %s / %s  (%.2f%%)" % (
+                    self._filename, self._seen_so_far, self._size,
+                    percentage))
+            sys.stdout.flush()
 
 def monitor(container):
     '''
@@ -59,14 +82,26 @@ def teardown_module(module):
     '''
     print('teardown_module')
 
+
 def custom_setup_function():
     endpoint_url = os.environ['MLFLOW_S3_ENDPOINT_URL']
-    # util.check_s3('s3://test', endpoint_url)
-    #
-    # print('Uploading data to s3://test')
-    # util.upload_s3('s3://test','/data/catsdogs.tar.gz',endpoint_url)
-    # util.upload_s3('s3://test','/data/catsdogstrain.tar.gz',endpoint_url)
-    # util.upload_s3('s3://test','/data/catsdogsval.tar.gz',endpoint_url)
+    s3 = boto3.resource('s3', endpoint_url=endpoint_url)
+    s3.create_bucket(Bucket='experiment')
+    s3.create_bucket(Bucket='test')
+    config = TransferConfig(multipart_threshold=1024 * 25, max_concurrency=10,
+                            multipart_chunksize=1024 * 25, use_threads=True)
+    s3.meta.client.upload_file('/data/catsdogs.tar.gz', 'test', 'catsdogs.tar.gz',
+                            Config=config,
+                            Callback=ProgressPercentage('/data/catsdogs.tar.gz')
+                            )
+    s3.meta.client.upload_file('/data/catsdogstrain.tar.gz', 'test', 'catsdogstrain.tar.gz',
+                            Config=config,
+                            Callback=ProgressPercentage('/data/catsdogstrain.tar.gz')
+                            )
+    s3.meta.client.upload_file('/data/catsdogsval.tar.gz', 'test', 'catsdogsval.tar.gz',
+                            Config=config,
+                            Callback=ProgressPercentage('/data/catsdogsval.tar.gz')
+                            )
 
 
 def custom_teardown_function():
@@ -80,17 +115,8 @@ def test_train():
     try:
         # Create experiment called test and put results in the bucket s3://test
         print('Creating experiment test and storing results in s3://test bucket')
-        subprocess.check_output('mlflow experiments create -n test -l s3://test', shell=True)
+        mlflow.create_experiment('test', 's3://experiment')
         print('Running experiment...')
-        subprocess.check_output('mlflow run --experiment-name test -P train_tar=s3://test/catsdogstrain.tar.gz '
-                                '-P val_tar=s3://test/catsdogsval.tar.gz .',shell=True)
+        mlflow.run(os.getcwd(), experiment_name='test', use_conda=False)
     except Exception as ex:
         raise(ex)
-
-    # record = os.path.join(os.getcwd(), 'train.record')
-    #exists = os.path.exists(record)
-    #MLFLOW_TRACKING_URI = 'http: // 127.0.0.1: 5000'
-    #MLFLOW_S3_ENDPOINT_URL = 'http://127.0.0.1: 9000'
-    #s = 'foobar'
-    #assert s == 'Image mean [122.73600502 140.90251093  95.58092464] normalized [0.48131767 0.55255887 0.37482716]'
-    #assert exists
