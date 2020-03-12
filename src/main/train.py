@@ -26,7 +26,10 @@ from image_pyfunc import log_model
 import glob
 import uuid
 
-has_wandb = False
+has_wandb = True
+
+def sigterm_handler(signal, frame):
+    print('Run got SIGTERM')
 
 class TrainOutput():
 
@@ -434,7 +437,6 @@ def setup_wandb():
     '''
     required_keys = ['WANDB_ENTITY', 'WANDB_USERNAME', 'WANDB_API_KEY', 'WANDB_PROJECT',
                      'WANDB_GROUP',]
-    has_wandb = True
     run = None
     for key in required_keys:
         if key not in env.keys():
@@ -451,6 +453,9 @@ def setup_wandb():
     return run
 
 if __name__ == '__main__':
+
+    signal.signal(signal.SIGTERM, sigterm_handler)
+
     output_dir = None
     parser = ArgParser()
     args = parser.parse_args()
