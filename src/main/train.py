@@ -98,14 +98,15 @@ class Train():
             monitor = 'val_binary_accuracy'
 
         metrics = Metrics(labels=list(labels.keys()), val_data=validation_generator, batch_size=batch_size)
-        wandb_call = WandbCallback(save_model=False, data_type="image", validation_data=validation_generator, labels=list(labels.keys()))
         early = Stopping(monitor=monitor, patience=3, verbose=1, restore_best_weights=True)
         checkpoint_path = '{}/checkpoints.best.h5'.format(output_dir)
         checkpoint = ModelCheckpoint(checkpoint_path, monitor=monitor, verbose=1, save_best_only=True, mode='max')
         if early_stop:
-            callbacks = [tensorboard, metrics, early, checkpoint, wandb_call]
+            callbacks = [tensorboard, metrics, early, checkpoint]
         else:
-            callbacks = [tensorboard, metrics, checkpoint, wandb_call]
+            callbacks = [tensorboard, metrics, checkpoint]
+        if has_wandb:
+            callbacks += WandbCallback(save_model=False, data_type="image", validation_data=validation_generator, labels=list(labels.keys()))
         if os.path.exists(checkpoint_path):
             print('Loading model weights from {}'.format(checkpoint_path))
             model.load_weights(checkpoint_path)
