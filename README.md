@@ -54,9 +54,14 @@ Build docker image for GPU training.
 ./build.sh GPU
 ```
 You can also build a CPU version for testing on your desktop but this is not recommended.
-If using the CPU, replace in MLproject mbari/avedac-gpu-kclassify with mbari/avedac-cpu-kclassify
+If using the CPU, replace gpu with cpu in toMLproject and src/nose/Dockerfile, e.g.
+mbari/avedac-cpu-kclassify not mbari/avedac-gpu-kclassify 
 ```bash
     ./build.sh CPU
+```
+Start a local Minio and MLFlow server
+```bash
+cd src/test && docker-compose -f docker-compose.local.yml up --build
 ```
 Set up a python virtual environment
 ```bash
@@ -93,4 +98,18 @@ Optionally, create and experiment called "test", saving the results to the bucke
 ```bash
 mlflow experiments create -n test -l s3://test
 mlflow run --experiment-name test -P train_tar=s3://test/catsdogstrain.tar.gz -P val_tar=s3://test/catsdogsval.tar.gz .
+```
+
+## Testing
+
+```bash
+cd src/test && docker-compose  up --build --abort-on-container-exit
+```
+If successful should see something ending in
+```bash
+
+```
+Clean-up with
+```bash
+cd src/test && docker-compose down -v
 ```
