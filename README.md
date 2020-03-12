@@ -107,7 +107,13 @@ cd src/test && docker-compose  up --build --abort-on-container-exit
 ```
 If successful should see something ending in
 ```bash
-
+nosetests       |   inspect.getargspec(func)
+nosetests       |
+nosetests       | ----------------------------------------------------------------------
+nosetests       | Ran 1 test in 1.453s
+nosetests       |
+nosetests       | OK
+nosetests exited with code 0
 ```
 Clean-up with
 ```bash
