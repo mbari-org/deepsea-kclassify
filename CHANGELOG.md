@@ -1,5 +1,12 @@
 # AVEDAC Keras Image Classifier Changelog
 
+## [1.0.1](http://bitbucket.org/mbari/avedac-kclassify/compare/v1.0.0...v1.0.1) (2020-03-12)
+
+
+### Bug Fixes
+
+* added missing file ([b9c3f1b](http://bitbucket.org/mbari/avedac-kclassify/commits/b9c3f1b8625e8c15d21308c3f7c995a5975e8ea2))
+
 # 1.0.0 (2020-03-12)
 
 
