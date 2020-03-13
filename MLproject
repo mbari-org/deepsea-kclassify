@@ -9,7 +9,7 @@ entry_points:
   main:
     parameters:
       train_tar: {type: string, default: "s3://testdata/catsdogstrain.tar.gz"}
-      test_tar: {type: string, default: "s3://testdata/catsdogstest.tar.gz"}
+      val_tar: {type: string, default: "s3://testdata/catsdogstest.tar.gz"}
       notes:  {type: string, default: "test catsdogs"}
       base_model:  {type: string, default: "vgg16"}
       augment_range: {type: int, default: 0.2}
@@ -26,7 +26,7 @@ entry_points:
       lr:  {type:float, default: .01}
       l2_weight_decay_alpha:  {type:float, default: 0.0}
 
-    command: "python /app/train.py --train_tar {train_tar} --test_tar {test_tar} --base_model {base_model} \
+    command: "python /app/train.py --train_tar {train_tar} --val_tar {val_tar} --base_model {base_model} \
     --epochs={epochs} --augment_range {augment_range} --horizontal_flip {horizontal_flip} \
     --vertical_flip {vertical_flip} --early_stop {early_stop} --batch_size {batch_size}  --epochs {epochs} \
     --k {k} --loss {loss} --shear_range {shear_range} --optimizer {optimizer} --balance_data {balance_data} \
