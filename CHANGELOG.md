@@ -1,5 +1,12 @@
 # AVEDAC Keras Image Classifier Changelog
 
+## [1.0.2](http://bitbucket.org/mbari/avedac-kclassify/compare/v1.0.1...v1.0.2) (2020-03-13)
+
+
+### Bug Fixes
+
+* **mlproject:** test_tar corrected to val_tar ([07b9be2](http://bitbucket.org/mbari/avedac-kclassify/commits/07b9be2d6caba82b042bb9f9c23abb4f437851f6))
+
 ## [1.0.1](http://bitbucket.org/mbari/avedac-kclassify/compare/v1.0.0...v1.0.1) (2020-03-12)
 
 
