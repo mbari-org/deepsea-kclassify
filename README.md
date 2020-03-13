@@ -40,10 +40,10 @@ Results are stored in a [MLFlow](https://github.com/mlflow/mlflow) tracking serv
 Following training, you should see results in a locally running mlfow server at http://127.0.0.1:5001, e.g.
 
 Organized by experiment
-![ Image link ](/doc/img/mlflow_exp.jpg)
+![ Image link ](/img/mlflow_exp.jpg)
 
 with runs
-![ Image link ](/doc/img/mlflow_run.jpg)
+![ Image link ](/img/mlflow_run.jpg)
 ## Prerequisites
  - Python version 3.6.1 
 - minio/AWS storage
