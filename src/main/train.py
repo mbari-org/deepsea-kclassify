@@ -1,3 +1,4 @@
+import signal
 import os,sys,inspect
 currentdir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
 parentdir = os.path.dirname(currentdir)
@@ -25,6 +26,7 @@ from focal_loss import focal_loss
 from image_pyfunc import log_model
 import glob
 import uuid
+from dotenv import load_dotenv
 
 has_wandb = True
 
@@ -105,7 +107,7 @@ class Train():
         checkpoint = ModelCheckpoint(checkpoint_path, monitor=monitor, verbose=1, save_best_only=True, mode='max')
         callbacks = [tensorboard, checkpoint]
         if early_stop:
-            callbacks += early
+            callbacks += [early]
         if has_wandb:
             metrics = Metrics(labels=list(labels.keys()), val_data=validation_generator, batch_size=batch_size)
             wandb = WandbCallback(save_model=False, data_type="image", validation_data=validation_generator, labels=list(labels.keys()))
@@ -430,20 +432,21 @@ def log_artifacts(train_output, image_dir,  output_dir):
     for artifact in glob.iglob(output_dir + '**/*.*', recursive=True):
         mlflow.log_artifact(local_path=artifact, artifact_path="events")
 
-def setup_wandb():
+def setup_wandb(parser_args):
     '''
     Checks if wandb is configured according to environment variable keys, and if so initializes run
+    :parser_args: parser objects to log to wandb
     :return: wandb run object
     '''
     required_keys = ['WANDB_ENTITY', 'WANDB_USERNAME', 'WANDB_API_KEY', 'WANDB_PROJECT',
                      'WANDB_GROUP',]
-    run = None
+    has_wandb_keys = True
     for key in required_keys:
         if key not in env.keys():
             print('Need to set ' + key)
-            has_wandb = False
+            has_wandb_keys = False
 
-    if has_wandb:
+    if has_wandb_keys:
         run = wandb.init(notes=parser.args.notes, job_type='training',  entity=os.environ['WANDB_ENTITY'],
                    project=os.environ['WANDB_PROJECT'], group=os.environ['WANDB_GROUP'])
 
@@ -455,6 +458,7 @@ def setup_wandb():
 if __name__ == '__main__':
 
     signal.signal(signal.SIGTERM, sigterm_handler)
+    load_dotenv(dotenv_path=os.environ['ENV'])
 
     output_dir = None
     parser = ArgParser()
@@ -477,11 +481,13 @@ if __name__ == '__main__':
         print("Using parameters")
         parser.summary()
 
-        run = setup_wandb()
-        if has_wandb:
+        run = setup_wandb(parser.parse_args())
+        if run:
             run_id = run.id
+            has_wandb = True
         else:
             run_id = uuid.uuid4().hex
+            has_wandb = False
 
         with tf.Session():
             with mlflow.start_run(run_name=run_id):

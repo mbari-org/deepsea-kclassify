@@ -21,6 +21,7 @@ ARG DOCKER_UID
 RUN groupadd --gid $DOCKER_GID docker && adduser --uid $DOCKER_UID --gid $DOCKER_GID --disabled-password --quiet --gecos "" docker_user
 RUN chown -Rf docker_user:docker ${APP_HOME}
 USER docker_user
+USER root
 
 WORKDIR ${APP_HOME}
 CMD ["python", "/app/train.py"]
