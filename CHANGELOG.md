@@ -1,5 +1,12 @@
 # AVEDAC Keras Image Classifier Changelog
 
+## [1.0.3](http://bitbucket.org/mbari/avedac-kclassify/compare/v1.0.2...v1.0.3) (2020-03-14)
+
+
+### Bug Fixes
+
+* **train.py:** fixed wandb init bug and Stopping append ([80a60f8](http://bitbucket.org/mbari/avedac-kclassify/commits/80a60f8a93d0cef3a348ed206d91b714868572ef))
+
 ## [1.0.2](http://bitbucket.org/mbari/avedac-kclassify/compare/v1.0.1...v1.0.2) (2020-03-13)
 
 
