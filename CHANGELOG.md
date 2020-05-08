@@ -1,5 +1,12 @@
 # AVEDAC Keras Image Classifier Changelog
 
+## [1.0.5](http://bitbucket.org/mbari/avedac-kclassify/compare/v1.0.4...v1.0.5) (2020-05-08)
+
+
+### Bug Fixes
+
+* handle missing val dir and remove var with outer scope name ([26cb658](http://bitbucket.org/mbari/avedac-kclassify/commits/26cb658601d1c70f481eb71fb4fa93588b0bc20a))
+
 ## [1.0.4](http://bitbucket.org/mbari/avedac-kclassify/compare/v1.0.3...v1.0.4) (2020-03-17)
 
 
