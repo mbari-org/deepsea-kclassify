@@ -14,6 +14,7 @@ Python test of Keras classifier using the nose python library
 @status: __status__
 @license: __license__
 '''
+
 import subprocess
 import docker
 import os
@@ -53,6 +54,7 @@ class ProgressPercentage(object):
                     percentage))
             sys.stdout.flush()
 
+
 def monitor(container):
     """
     Monitor running container and print output
@@ -68,6 +70,7 @@ def monitor(container):
         else:
             break
     return l
+
 
 def teardown_module(module):
     """
@@ -86,17 +89,17 @@ def custom_setup_function():
     config = TransferConfig(multipart_threshold=1024 * 25, max_concurrency=10,
                             multipart_chunksize=1024 * 25, use_threads=True)
     s3.meta.client.upload_file('/data/catsdogs.tar.gz', 'test', 'catsdogs.tar.gz',
-                            Config=config,
-                            Callback=ProgressPercentage('/data/catsdogs.tar.gz')
-                            )
+                               Config=config,
+                               Callback=ProgressPercentage('/data/catsdogs.tar.gz')
+                               )
     s3.meta.client.upload_file('/data/catsdogstrain.tar.gz', 'test', 'catsdogstrain.tar.gz',
-                            Config=config,
-                            Callback=ProgressPercentage('/data/catsdogstrain.tar.gz')
-                            )
+                               Config=config,
+                               Callback=ProgressPercentage('/data/catsdogstrain.tar.gz')
+                               )
     s3.meta.client.upload_file('/data/catsdogsval.tar.gz', 'test', 'catsdogsval.tar.gz',
-                            Config=config,
-                            Callback=ProgressPercentage('/data/catsdogsval.tar.gz')
-                            )
+                               Config=config,
+                               Callback=ProgressPercentage('/data/catsdogsval.tar.gz')
+                               )
 
 
 def custom_teardown_function():
@@ -105,13 +108,12 @@ def custom_teardown_function():
 
 @with_setup(custom_setup_function, custom_teardown_function)
 def test_train():
-
     print('<============================ running test_train ============================ >')
     try:
         # Create experiment called test and put results in the bucket s3://test
         print('Creating experiment test and storing results in s3://test bucket')
-        mlflow.create_experiment('test2','s3://experiment')
+        mlflow.create_experiment('test2', 's3://experiment')
         print('Running experiment...')
         mlflow.run(os.getcwd(), experiment_name='test2', use_conda=False)
     except Exception as ex:
-        raise(ex)
+        raise (ex)
