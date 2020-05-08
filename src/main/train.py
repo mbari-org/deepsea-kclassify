@@ -227,9 +227,13 @@ class Train:
                                                                             validation_split=0.2,
                                                                             featurewise_center=True,
                                                                             featurewise_std_normalization=True)
+            val_datagen = train_datagen
 
         train_dir = os.path.join(output_dir, 'train')
-        val_dir = os.path.join(output_dir, 'val')
+        if args.val_tar:
+            val_dir = os.path.join(output_dir, 'val')
+        else:
+            val_dir = train_dir
         image_dir = os.path.join(output_dir, 'images')
         os.makedirs(image_dir)
         try:
@@ -463,10 +467,10 @@ def setup_wandb():
     Checks if wandb is configured according to environment variable keys, and if so initializes run
     :return: wandb run object
     """
-    required_keys = ['WANDB_ENTITY', 'WANDB_USERNAME', 'WANDB_API_KEY', 'WANDB_PROJECT',
+    keys = ['WANDB_ENTITY', 'WANDB_USERNAME', 'WANDB_API_KEY', 'WANDB_PROJECT',
                      'WANDB_GROUP', ]
     has_wandb_keys = True
-    for key in required_keys:
+    for key in keys:
         if key not in env.keys():
             print('Need to set ' + key)
             has_wandb_keys = False
