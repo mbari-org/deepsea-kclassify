@@ -1,5 +1,12 @@
 # AVEDAC Keras Image Classifier Changelog
 
+## [1.0.4](http://bitbucket.org/mbari/avedac-kclassify/compare/v1.0.3...v1.0.4) (2020-03-17)
+
+
+### Bug Fixes
+
+* reduced early stop patience to avoid prolonged runs ([53bc567](http://bitbucket.org/mbari/avedac-kclassify/commits/53bc567632759f85db6053a2db510ad5533f29d5))
+
 ## [1.0.3](http://bitbucket.org/mbari/avedac-kclassify/compare/v1.0.2...v1.0.3) (2020-03-14)
 
 
