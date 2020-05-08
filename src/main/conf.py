@@ -1,4 +1,20 @@
-SOURCE = 'https://bitbucket.org/mbari/mlflow-kerasclassifier/src/master/train.py'
+#!/usr/bin/env python
+
+__author__ = "Danelle Cline"
+__copyright__ = "Copyright 2020, MBARI"
+__credits__ = ["MBARI"]
+__license__ = "GPL"
+__maintainer__ = "Danelle Cline"
+__email__ = "dcline at mbari.org"
+__doc__ = '''
+
+Configuration file for model specifications. 
+These models are the ones supported in this code.
+
+@author: __author__
+@status: __status__
+@license: __license__
+'''
 
 MODEL_DICT = {}
 

@@ -1,4 +1,23 @@
+#!/usr/bin/env python
+
+__author__ = "Danelle Cline"
+__copyright__ = "Copyright 2020, MBARI"
+__credits__ = ["MBARI"]
+__license__ = "GPL"
+__maintainer__ = "Danelle Cline"
+__email__ = "dcline at mbari.org"
+__doc__ = '''
+
+Focal loss function utilities. This is current unused.
+TODO: remove or add as argument to the classifier.
+
+@author: __author__
+@status: __status__
+@license: __license__
+'''
+
 import tensorflow as tf
+
 
 def focal_loss(gamma=2., alpha=4.):
     """Focal loss for multi-classification.
@@ -28,4 +47,5 @@ def focal_loss(gamma=2., alpha=4.):
         fl = tf.multiply(alpha, tf.multiply(weight, ce))
         reduced_fl = tf.reduce_max(fl, axis=1)
         return tf.reduce_mean(reduced_fl)
+
     return focal_loss_fixed

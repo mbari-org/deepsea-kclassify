@@ -1,7 +1,17 @@
+# !/usr/bin/env python
+"""
+Helper class that provides TensorFlow image coding utilities
+Duplicate of inception/inception/data/build_image_data.py in tensorflow
+
+@author: __author__
+@status: __status__
+@license: __license__
+"""
+
 import tensorflow as tf
 
+
 class ImageCoder(object):
-    """Helper class that provides TensorFlow image coding utilities."""
 
     def __init__(self):
         # Create a single Session to run all image coding calls.

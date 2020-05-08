@@ -1,9 +1,27 @@
+#!/usr/bin/env python
+
+__author__ = "Danelle Cline"
+__copyright__ = "Copyright 2020, MBARI"
+__credits__ = ["MBARI"]
+__license__ = "GPL"
+__maintainer__ = "Danelle Cline"
+__email__ = "dcline at mbari.org"
+__doc__ = '''
+
+Cosine annealing learning rate scheduler with periodic restarts.
+Current unused. TODO: remove this
+
+@author: __author__
+@status: __status__
+@license: __license__
+'''
+
 from tensorflow.keras.callbacks import Callback
 import tensorflow.keras.backend as K
 import numpy as np
 
 class SGDRScheduler(Callback):
-    '''Cosine annealing learning rate scheduler with periodic restarts.
+    """Cosine annealing learning rate scheduler with periodic restarts.
     # Usage
         ```python
             schedule = SGDRScheduler(min_lr=1e-5,
@@ -25,7 +43,7 @@ class SGDRScheduler(Callback):
     # References
         Blog post: jeremyjordan.me/nn-learning-rate
         Original paper: http://arxiv.org/abs/1608.03983
-    '''
+    """
     def __init__(self,
                  min_lr,
                  max_lr,
@@ -50,18 +68,18 @@ class SGDRScheduler(Callback):
         self.best_weights = []
 
     def clr(self):
-        '''Calculate the learning rate.'''
+        """Calculate the learning rate."""
         fraction_to_restart = self.batch_since_restart / (self.steps_per_epoch * self.cycle_length)
         lr = self.min_lr + 0.5 * (self.max_lr - self.min_lr) * (1 + np.cos(fraction_to_restart * np.pi))
         return lr
 
     def on_train_begin(self, logs={}):
-        '''Initialize the learning rate to the minimum value at the start of training.'''
+        """Initialize the learning rate to the minimum value at the start of training."""
         logs = logs or {}
         K.set_value(self.model.optimizer.lr, self.max_lr)
 
     def on_batch_end(self, batch, logs={}):
-        '''Record previous batch statistics and update the learning rate.'''
+        """Record previous batch statistics and update the learning rate."""
         logs = logs or {}
         self.history.setdefault('lr', []).append(K.get_value(self.model.optimizer.lr))
         for k, v in logs.items():
@@ -71,7 +89,7 @@ class SGDRScheduler(Callback):
         K.set_value(self.model.optimizer.lr, self.clr())
 
     def on_epoch_end(self, epoch, logs={}):
-        '''Check for end of current cycle, apply restarts when necessary.'''
+        """Check for end of current cycle, apply restarts when necessary."""
         if epoch + 1 == self.next_restart:
             self.batch_since_restart = 0
             self.cycle_length = np.ceil(self.cycle_length * self.mult_factor)
@@ -80,5 +98,5 @@ class SGDRScheduler(Callback):
             self.best_weights = self.model.get_weights()
 
     def on_train_end(self, logs={}):
-        '''Set weights to the values from the end of the most recent cycle for best performance.'''
+        """Set weights to the values from the end of the most recent cycle for best performance."""
         self.model.set_weights(self.best_weights)

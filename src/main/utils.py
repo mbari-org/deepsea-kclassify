@@ -1,3 +1,20 @@
+# !/usr/bin/env python
+
+__author__ = "Danelle Cline"
+__copyright__ = "Copyright 2020, MBARI"
+__credits__ = ["MBARI"]
+__license__ = "GPL"
+__maintainer__ = "Danelle Cline"
+__email__ = "dcline at mbari.org"
+__doc__ = '''
+
+Utilities for bucket and file management
+
+@author: __author__
+@status: __status__
+@license: __license__
+'''
+
 import os
 import tarfile
 import shutil
@@ -7,8 +24,8 @@ import boto3
 from botocore.client import Config
 import botocore
 
-def unpack(out_dir, tar_file):
 
+def unpack(out_dir, tar_file):
     if os.path.isfile(tar_file) and 'tar.gz' in tar_file and 's3' not in tar_file:
         print('Unpacking {}'.format(tar_file))
         tar = tarfile.open(tar_file)
@@ -32,13 +49,14 @@ def unpack(out_dir, tar_file):
     else:
         raise ('{} invalid'.format(tar_file))
 
+
 def check_s3(bucket_name, endpoint_url=None):
-    '''
+    """
     Check bucket by creating the s3 bucket - this will either create or return the existing bucket
     :param endpoint_url: endpoint for the s3 service; for minio use only
     :param bucket_name: name of the bucket to check
     :return:
-    '''
+    """
     env = os.environ.copy()
     # check and create bucket if it doesn't exist
     bucket_bname = bucket_name.split('s3://')[-1]
@@ -61,6 +79,7 @@ def check_s3(bucket_name, endpoint_url=None):
         s3.create_bucket(Bucket=bucket_bname)
     except botocore.exceptions.ClientError as e:
         print(e)
+
 
 def download_s3(endpoint_url, source_bucket, target_dir, object_name):
     try:

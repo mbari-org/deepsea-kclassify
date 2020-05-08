@@ -1,5 +1,23 @@
+#!/usr/bin/env python
+
+__author__ = "Danelle Cline"
+__copyright__ = "Copyright 2020, MBARI"
+__credits__ = ["MBARI"]
+__license__ = "GPL"
+__maintainer__ = "Danelle Cline"
+__email__ = "dcline at mbari.org"
+__doc__ = '''
+
+RAdam Optimizer
+
+@author: __author__
+@status: __status__
+@license: __license__
+'''
+
 import tensorflow
 from tensorflow.python.keras import backend as K
+
 
 class RAdam(tensorflow.keras.optimizers.Optimizer):
     """RAdam optimizer.
@@ -7,6 +25,7 @@ class RAdam(tensorflow.keras.optimizers.Optimizer):
         - [Adam - A Method for Stochastic Optimization](https://arxiv.org/abs/1412.6980v8)
         - [On The Variance Of The Adaptive Learning Rate And Beyond](https://arxiv.org/pdf/1908.03265v1.pdf)
     """
+
     def __init__(self, lr=0.001, beta_1=0.9, beta_2=0.999,
                  epsilon=None, decay=0., weight_decay=0., **kwargs):
         '''

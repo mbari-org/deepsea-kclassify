@@ -14,23 +14,26 @@ Utilities for file upload/download
 @status: __status__
 @license: __license__
 '''
+
 import tarfile
 import shutil
 import boto3
 from botocore.client import Config
 import botocore
 import os
-import time 
+import time
 from urllib.parse import urlparse
 import tempfile
 from boto3.s3.transfer import TransferConfig
 
+
 class ProgressPercentage(object):
     def __init__(self, filename):
-            self._filename = filename
-            self._size = float(os.path.getsize(filename))
-            self._seen_so_far = 0
-            self._lock = threading.Lock()
+        self._filename = filename
+        self._size = float(os.path.getsize(filename))
+        self._seen_so_far = 0
+        self._lock = threading.Lock()
+
 
 def unpack(out_dir, tar_file):
     if os.path.isfile(tar_file) and 'tar.gz' in tar_file and 's3' not in tar_file:
@@ -57,13 +60,14 @@ def unpack(out_dir, tar_file):
     else:
         raise ('{} invalid'.format(tar_file))
 
+
 def check_s3(bucket_name, endpoint_url=None):
-    '''
+    """
     Check bucket by creating the s3 bucket - this will either create or return the existing bucket
     :param endpoint_url: endpoint for the s3 service; for minio use only
     :param bucket_name: name of the bucket to check e.g. s3://test
     :return:
-    '''
+    """
     # check and create bucket if it doesn't exist
     urlp = urlparse(bucket_name)
     bucket_name = urlp.netloc
@@ -77,6 +81,7 @@ def check_s3(bucket_name, endpoint_url=None):
         s3.create_bucket(Bucket=bucket_name)
     except botocore.exceptions.ClientError as e:
         print('Bucket already created or other error')
+
 
 def download_s3(endpoint_url, source_bucket, target_dir):
     try:
@@ -99,18 +104,21 @@ def download_s3(endpoint_url, source_bucket, target_dir):
     except Exception as e:
         raise (e)
 
+
 def upload_s3(target_bucket, target_file, endpoint_url=None):
     urlp = urlparse(target_bucket)
     print(urlp)
     bucket_name = urlp.netloc
     print(f'Uploading {target_file} to bucket {target_bucket} using endpoint_url {endpoint_url}')
-    config = TransferConfig(multipart_threshold=1024*25,max_concurrency=10,multipart_chunksize=1024*25,use_threads=True)
+    config = TransferConfig(multipart_threshold=1024 * 25, max_concurrency=10, multipart_chunksize=1024 * 25,
+                            use_threads=True)
     if endpoint_url:
-        #s3 = boto3.resource('s3', config=Config(signature_version='s3v4'),endpoint_url=endpoint_url)
-        #s3 = boto3.client('s3', endpoint_url=endpoint_url, connect_timeout=60, write_timeout=120)
+        # s3 = boto3.resource('s3', config=Config(signature_version='s3v4'),endpoint_url=endpoint_url)
+        # s3 = boto3.client('s3', endpoint_url=endpoint_url, connect_timeout=60, write_timeout=120)
         key_path = f'{bucket_name}/{os.path.basename(target_file)}'
-        #s3.meta.client.upload_file(target_file, bucket_name, key_path, Config=config, Callback=ProgressPercentage(target_file))
-        s3.meta.client.upload_file('/data/catsdogs.tar.gz', '/test', '/test/catsdogs.tar.gz', Config=config, Callback=ProgressPercentage('/data/catsdogs.tar.gz'))
+        # s3.meta.client.upload_file(target_file, bucket_name, key_path, Config=config, Callback=ProgressPercentage(target_file))
+        s3.meta.client.upload_file('/data/catsdogs.tar.gz', '/test', '/test/catsdogs.tar.gz', Config=config,
+                                   Callback=ProgressPercentage('/data/catsdogs.tar.gz'))
     else:
         s3 = boto3.resource('s3')
     '''try:

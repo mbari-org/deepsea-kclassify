@@ -14,6 +14,7 @@ Setup bucket and upload data for training/testing in MLFlow Docker environment
 @status: __status__
 @license: __license__
 '''
+
 import sys
 import boto3
 import os
@@ -21,8 +22,8 @@ import util
 from botocore.client import Config
 from dotenv import load_dotenv
 
-test_dir = os.path.dirname(os.path.abspath(__file__)) 
-load_dotenv(dotenv_path=os.path.join(test_dir,'test.env'))
+test_dir = os.path.dirname(os.path.abspath(__file__))
+load_dotenv(dotenv_path=os.path.join(test_dir, 'test.env'))
 
 # setup client
 endpoint_url = os.environ['MLFLOW_S3_ENDPOINT_URL']
@@ -38,6 +39,6 @@ print('Checking bucket to save to s3://test')
 util.check_s3('s3://test', endpoint_url)
 
 print('Uploading data to bucket')
-util.upload_s3('s3://test',os.path.join(test_dir,'../../','data','catsdogs.tar.gz'),endpoint_url)
-util.upload_s3('s3://test',os.path.join(test_dir,'../../','data','catsdogstrain.tar.gz'),endpoint_url)
-util.upload_s3('s3://test',os.path.join(test_dir,'../../','data','catsdogsval.tar.gz'),endpoint_url)
+util.upload_s3('s3://test', os.path.join(test_dir, '../../', 'data', 'catsdogs.tar.gz'), endpoint_url)
+util.upload_s3('s3://test', os.path.join(test_dir, '../../', 'data', 'catsdogstrain.tar.gz'), endpoint_url)
+util.upload_s3('s3://test', os.path.join(test_dir, '../../', 'data', 'catsdogsval.tar.gz'), endpoint_url)

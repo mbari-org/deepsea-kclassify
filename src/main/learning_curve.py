@@ -1,3 +1,20 @@
+#!/usr/bin/env python
+
+__author__ = "Danelle Cline"
+__copyright__ = "Copyright 2020, MBARI"
+__credits__ = ["MBARI"]
+__license__ = "GPL"
+__maintainer__ = "Danelle Cline"
+__email__ = "dcline at mbari.org"
+__doc__ = '''
+
+Example on how to generate a learning curve.
+
+@author: __author__
+@status: __status__
+@license: __license__
+'''
+
 import os
 import utils
 from train import Train

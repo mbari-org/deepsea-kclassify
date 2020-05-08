@@ -1,5 +1,23 @@
+#!/usr/bin/env python
+
+__author__ = "Danelle Cline"
+__copyright__ = "Copyright 2020, MBARI"
+__credits__ = ["MBARI"]
+__license__ = "GPL"
+__maintainer__ = "Danelle Cline"
+__email__ = "dcline at mbari.org"
+__doc__ = '''
+
+TensorFlow Keras classifier with integrated MLFlow and Wandb logging
+
+@author: __author__
+@status: __status__
+@license: __license__
+'''
+
 import signal
-import os,sys,inspect
+import os, sys, inspect
+
 currentdir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
 parentdir = os.path.dirname(currentdir)
 sys.path.insert(0, parentdir)
@@ -30,12 +48,14 @@ from dotenv import load_dotenv
 
 has_wandb = True
 
+
 def sigterm_handler(signal, frame):
     print('Run got SIGTERM')
 
+
 class TrainOutput():
 
-    def __init__(self,  model, train, image_size, labels, class_size, history, image_mean,
+    def __init__(self, model, train, image_size, labels, class_size, history, image_mean,
                  image_std, best_epoch):
         self.model = model
         self.train = train
@@ -47,7 +67,8 @@ class TrainOutput():
         self.image_std = image_std
         self.best_epoch = best_epoch
 
-class Train():
+
+class Train:
 
     def __init__(self, **kwargs):
         self.pyfunc_params = kwargs
@@ -110,19 +131,20 @@ class Train():
             callbacks += [early]
         if has_wandb:
             metrics = Metrics(labels=list(labels.keys()), val_data=validation_generator, batch_size=batch_size)
-            wandb = WandbCallback(save_model=False, data_type="image", validation_data=validation_generator, labels=list(labels.keys()))
+            wandb = WandbCallback(save_model=False, data_type="image", validation_data=validation_generator,
+                                  labels=list(labels.keys()))
             callbacks += [metrics, wandb]
 
         if os.path.exists(checkpoint_path):
             print('Loading model weights from {}'.format(checkpoint_path))
             model.load_weights(checkpoint_path)
         history = model.fit_generator(train_generator,
-                                           steps_per_epoch=steps_per_epoch,
-                                           epochs=epochs,
-                                           use_multiprocessing=True,
-                                           validation_data=validation_generator,
-                                           validation_steps=validation_steps,
-                                           callbacks=callbacks)
+                                      steps_per_epoch=steps_per_epoch,
+                                      epochs=epochs,
+                                      use_multiprocessing=True,
+                                      validation_data=validation_generator,
+                                      validation_steps=validation_steps,
+                                      callbacks=callbacks)
         model.load_weights(checkpoint_path)
         if early_stop:
             best_epoch = early.best_epoch
@@ -176,35 +198,35 @@ class Train():
         # Rescale all images by 1./255 and apply image augmentation if requested
         if args.val_tar:
             train_datagen = tf.keras.preprocessing.image.ImageDataGenerator(rescale=1. / 255,
-                                                                         width_shift_range=args.augment_range,
-                                                                         height_shift_range=args.augment_range,
-                                                                         zoom_range=args.augment_range,
-                                                                         horizontal_flip=args.horizontal_flip,
-                                                                         vertical_flip=args.vertical_flip,
-                                                                         shear_range=args.shear_range,
-                                                                         featurewise_center=True,
-                                                                         featurewise_std_normalization=True)
+                                                                            width_shift_range=args.augment_range,
+                                                                            height_shift_range=args.augment_range,
+                                                                            zoom_range=args.augment_range,
+                                                                            horizontal_flip=args.horizontal_flip,
+                                                                            vertical_flip=args.vertical_flip,
+                                                                            shear_range=args.shear_range,
+                                                                            featurewise_center=True,
+                                                                            featurewise_std_normalization=True)
 
             val_datagen = tf.keras.preprocessing.image.ImageDataGenerator(rescale=1. / 255,
-                                                                       width_shift_range=args.augment_range,
-                                                                       height_shift_range=args.augment_range,
-                                                                       zoom_range=args.augment_range,
-                                                                       horizontal_flip=args.horizontal_flip,
-                                                                       vertical_flip=args.vertical_flip,
-                                                                       shear_range=args.shear_range,
-                                                                       featurewise_center=True,
-                                                                       featurewise_std_normalization=True)
+                                                                          width_shift_range=args.augment_range,
+                                                                          height_shift_range=args.augment_range,
+                                                                          zoom_range=args.augment_range,
+                                                                          horizontal_flip=args.horizontal_flip,
+                                                                          vertical_flip=args.vertical_flip,
+                                                                          shear_range=args.shear_range,
+                                                                          featurewise_center=True,
+                                                                          featurewise_std_normalization=True)
         else:
             train_datagen = tf.keras.preprocessing.image.ImageDataGenerator(rescale=1. / 255,
-                                                                         width_shift_range=args.augment_range,
-                                                                         height_shift_range=args.augment_range,
-                                                                         zoom_range=args.augment_range,
-                                                                         horizontal_flip=args.horizontal_flip,
-                                                                         vertical_flip=args.vertical_flip,
-                                                                         shear_range=args.shear_range,
-                                                                         validation_split=0.2,
-                                                                         featurewise_center=True,
-                                                                         featurewise_std_normalization=True)
+                                                                            width_shift_range=args.augment_range,
+                                                                            height_shift_range=args.augment_range,
+                                                                            zoom_range=args.augment_range,
+                                                                            horizontal_flip=args.horizontal_flip,
+                                                                            vertical_flip=args.vertical_flip,
+                                                                            shear_range=args.shear_range,
+                                                                            validation_split=0.2,
+                                                                            featurewise_center=True,
+                                                                            featurewise_std_normalization=True)
 
         train_dir = os.path.join(output_dir, 'train')
         val_dir = os.path.join(output_dir, 'val')
@@ -215,13 +237,13 @@ class Train():
             if args.val_tar:
                 utils.unpack(val_dir, args.val_tar)
         except Exception as ex:
-            raise(ex)
+            raise (ex)
 
         # check if depth is only 1 - here we assume data is nested in subdir
         def check_depth(d):
             if len(os.listdir(d)) == 1:
-                return os.path.join(d,os.listdir(d)[0])
-            return d 
+                return os.path.join(d, os.listdir(d)[0])
+            return d
 
         print('Checking training directory depth')
         train_dir = check_depth(train_dir)
@@ -383,20 +405,22 @@ class Train():
 
         model.summary()
         history, model, best_epoch = train.compile_and_fit_model(labels=labels, model=model, fine_tune_at=fine_tune_at,
-                                              train_generator=training_generator, lr=args.lr,
-                                              validation_generator=validation_generator,
-                                              epochs=args.epochs, batch_size=args.batch_size,
-                                              loss=args.loss, output_dir=output_dir,
-                                              optimizer=args.optimizer,
-                                              metric_type=tf.keras.metrics.categorical_accuracy,
-                                              early_stop=args.early_stop)
+                                                                 train_generator=training_generator, lr=args.lr,
+                                                                 validation_generator=validation_generator,
+                                                                 epochs=args.epochs, batch_size=args.batch_size,
+                                                                 loss=args.loss, output_dir=output_dir,
+                                                                 optimizer=args.optimizer,
+                                                                 metric_type=tf.keras.metrics.categorical_accuracy,
+                                                                 early_stop=args.early_stop)
 
         return TrainOutput(model, train, image_size, labels, class_size, history, mean, std, best_epoch)
+
 
 def log_params(params):
     if has_wandb:
         wandb.log(dict(params))
     mlflow.log_params(params)
+
 
 def log_metrics(train_output, image_dir):
     train_output.train.print_metrics(train_output.history)
@@ -421,7 +445,8 @@ def log_metrics(train_output, image_dir):
         if has_wandb:
             wandb.config.update({"best_val_binary_accuracy": acc[train_output.best_epoch]})
 
-def log_artifacts(train_output, image_dir,  output_dir):
+
+def log_artifacts(train_output, image_dir, output_dir):
     # log generated plots to images directory
     for figure_path in glob.iglob(image_dir + '**/*', recursive=True):
         mlflow.log_artifact(local_path=figure_path, artifact_path="images")
@@ -432,28 +457,30 @@ def log_artifacts(train_output, image_dir,  output_dir):
     for artifact in glob.iglob(output_dir + '**/*.*', recursive=True):
         mlflow.log_artifact(local_path=artifact, artifact_path="events")
 
-def setup_wandb(parser_args):
-    '''
+
+def setup_wandb():
+    """
     Checks if wandb is configured according to environment variable keys, and if so initializes run
-    :parser_args: parser objects to log to wandb
     :return: wandb run object
-    '''
+    """
     required_keys = ['WANDB_ENTITY', 'WANDB_USERNAME', 'WANDB_API_KEY', 'WANDB_PROJECT',
-                     'WANDB_GROUP',]
+                     'WANDB_GROUP', ]
     has_wandb_keys = True
     for key in required_keys:
         if key not in env.keys():
             print('Need to set ' + key)
             has_wandb_keys = False
 
+    wandb_run = None
     if has_wandb_keys:
-        run = wandb.init(notes=parser.args.notes, job_type='training',  entity=os.environ['WANDB_ENTITY'],
-                   project=os.environ['WANDB_PROJECT'], group=os.environ['WANDB_GROUP'])
+        wandb_run = wandb.init(notes=parser.args.notes, job_type='training', entity=os.environ['WANDB_ENTITY'],
+                               project=os.environ['WANDB_PROJECT'], group=os.environ['WANDB_GROUP'])
 
         # adds all of the arguments as config variables
         wandb.config.update(parser.args)
 
-    return run
+    return wandb_run
+
 
 if __name__ == '__main__':
 
@@ -481,7 +508,7 @@ if __name__ == '__main__':
         print("Using parameters")
         parser.summary()
 
-        run = setup_wandb(parser.parse_args())
+        run = setup_wandb()
         if run:
             run_id = run.id
             has_wandb = True
@@ -491,7 +518,6 @@ if __name__ == '__main__':
 
         with tf.Session():
             with mlflow.start_run(run_name=run_id):
-
                 output_dir = tempfile.mkdtemp()
                 train_output = Train().train_model(args, output_dir)
 

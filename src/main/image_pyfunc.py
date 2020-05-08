@@ -1,7 +1,21 @@
-"""
-Custom python function implementing image classifier with image preprocessing embedded
-in the model.
-"""
+#!/usr/bin/env python
+
+__author__ = "Danelle Cline"
+__copyright__ = "Copyright 2020, MBARI"
+__credits__ = ["MBARI"]
+__license__ = "GPL"
+__maintainer__ = "Danelle Cline"
+__email__ = "dcline at mbari.org"
+__doc__ = '''
+
+MLFlow call back module. This implements a custom python function that includes image preprocessing then classification.
+Any modifications to the inference use of the classifier should be done here.
+
+@author: __author__
+@status: __status__
+@license: __license__
+'''
+
 import os,sys,inspect
 currentdir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
 parentdir = os.path.dirname(currentdir)

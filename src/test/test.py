@@ -59,11 +59,11 @@ class ProgressPercentage(object):
             sys.stdout.flush()
 
 def monitor(container):
-    '''
+    """
     Monitor running container and print output
     :param container:
     :return:
-    '''
+    """
     container.reload()
     l = ""
     while True:
@@ -75,11 +75,11 @@ def monitor(container):
     return l
 
 def teardown_module(module):
-    '''
+    """
     Run after everything in this file completes
     :param module:
     :return:
-    '''
+    """
     print('teardown_module')
 
 

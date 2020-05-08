@@ -1,3 +1,21 @@
+#!/usr/bin/env python
+
+__author__ = "Danelle Cline"
+__copyright__ = "Copyright 2020, MBARI"
+__credits__ = ["MBARI"]
+__license__ = "GPL"
+__maintainer__ = "Danelle Cline"
+__email__ = "dcline at mbari.org"
+__doc__ = '''
+
+Calculates accuracy, precision and recall *during* training.
+This is not provided in the Keras framework.
+
+@author: __author__
+@status: __status__
+@license: __license__
+'''
+
 import tensorflow.keras
 import numpy as np
 import sklearn.metrics

@@ -1,10 +1,28 @@
+#!/usr/bin/env python
+
+__author__ = "Danelle Cline"
+__copyright__ = "Copyright 2020, MBARI"
+__credits__ = ["MBARI"]
+__license__ = "GPL"
+__maintainer__ = "Danelle Cline"
+__email__ = "dcline at mbari.org"
+__doc__ = '''
+
+Argument parser
+
+@author: __author__
+@status: __status__
+@license: __license__
+'''
+
 import os
 import argparse
 import sys
 import conf as model_conf
 from argparse import RawTextHelpFormatter
 
-class ArgParser():
+
+class ArgParser:
 
     def __init__(self):
 
@@ -14,14 +32,14 @@ class ArgParser():
         examples += sys.argv[0] + " --train_tar s3://127.0.0.1:9000/mydata/trainimages.tar.gz" \
                                   " --val_tar s3://127.0.0.1:9000/mydata/testimages.tar.gz"
         self.parser = argparse.ArgumentParser(formatter_class=RawTextHelpFormatter,
-                                         description='Run transfer learning on folder of images organized by label',
-                                         epilog=examples)
+                                              description='Run transfer learning on folder of images organized by label',
+                                              epilog=examples)
         self.parser.add_argument("--train_tar", help="Path to training compressed data", required=True)
         self.parser.add_argument("--val_tar", help="Path to validation compressed data", required=False)
         self.parser.add_argument("--base_model", choices=model_conf.MODEL_DICT.keys(), default='vgg16',
-                            help='Enter the network you want as your base feature extractor')
+                                 help='Enter the network you want as your base feature extractor')
         self.parser.add_argument("--batch_size", default=32, type=int,
-                            help='Enter the batch size that must be used to train')
+                                 help='Enter the batch size that must be used to train')
         self.parser.add_argument('--lr', type=float, default=0.01, help='learning rate (default: 0.01)')
         self.parser.add_argument('--l2_weight_decay_alpha', type=float, default=0.0, help='weight decay if using l2 '
                                                                                           'regularlization to reduce '
@@ -33,20 +51,24 @@ class ArgParser():
                                  help='add vertical flip augmentation')
         self.parser.add_argument('--early_stop', type=self.boolean_string, default=False,
                                  help='apply early stopping to model')
-        self.parser.add_argument('--augment_range', type=float, default=0.0,  help='range '
-                                            'between 0-1 to apply width, shift, and zoom augmentation during training')
-        self.parser.add_argument('--k', type=int, default=5,  help='1-5 batch interval for look-ahead')
-        self.parser.add_argument('--shear_range', type=float, default=0.0,  help='range '
-                                            'between 0-1 to apply shear augmentation during training')
+        self.parser.add_argument('--augment_range', type=float, default=0.0, help='range '
+                                                                                  'between 0-1 to apply width, shift, and zoom augmentation during training')
+        self.parser.add_argument('--k', type=int, default=5, help='1-5 batch interval for look-ahead')
+        self.parser.add_argument('--shear_range', type=float, default=0.0, help='range '
+                                                                                'between 0-1 to apply shear augmentation during training')
         self.parser.add_argument("--epochs", help="Number of epochs for training", nargs='?', action='store', default=1,
-                            type=int)
-        self.parser.add_argument("--loss", help="Loss function for the gradients categorical_crossentropy, val_binary_accuracy, or categorical_focal_loss", nargs='?', action='store',
-                            default='categorical_crossentropy', type=str)
+                                 type=int)
+        self.parser.add_argument("--loss",
+                                 help="Loss function for the gradients categorical_crossentropy, val_binary_accuracy, or categorical_focal_loss",
+                                 nargs='?', action='store',
+                                 default='categorical_crossentropy', type=str)
         self.parser.add_argument("--optimizer", help="optimizer: adam, radam, ranger", default='radam')
-        self.parser.add_argument("--notes", help="Notes for the experiment", nargs='?', action='store', default='', type=str)
+        self.parser.add_argument("--notes", help="Notes for the experiment", nargs='?', action='store', default='',
+                                 type=str)
         self.parser.add_argument("--verbose", help="Verbose output", nargs='?', action='store', default=0, type=int)
         self.parser.add_argument("--balance_data", type=self.boolean_string,
-                                 help="Balance Training data using imbalanced-learn using Random Over Sampling ROS", default=False)
+                                 help="Balance Training data using imbalanced-learn using Random Over Sampling ROS",
+                                 default=False)
 
     def parse_args(self):
         self.args = self.parser.parse_args()
@@ -76,6 +98,7 @@ class ArgParser():
         if self.args.val_tar:
             print("val_tar:", self.args.val_tar)
         print("balance_data:", self.args.balance_data)
+
 
 if __name__ == '__main__':
     parser = ArgParser()

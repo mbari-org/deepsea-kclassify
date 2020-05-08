@@ -1,22 +1,40 @@
+#!/usr/bin/env python
+
+__author__ = "Danelle Cline"
+__copyright__ = "Copyright 2020, MBARI"
+__credits__ = ["MBARI"]
+__license__ = "GPL"
+__maintainer__ = "Danelle Cline"
+__email__ = "dcline at mbari.org"
+__doc__ = '''
+
+Surgery code to freeze, slim by dropping layers, etc.
+
+@author: __author__
+@status: __status__
+@license: __license__
+'''
+
 from tfkerassurgeon import Surgeon
 import tensorflow as tf
 import conf as model_conf
 
-class TransferModel():
+
+class TransferModel:
 
     def __init__(self, base_model_name):
         self.base_model_name = base_model_name
         if base_model_name not in model_conf.MODEL_DICT.keys():
-            raise('{} not in {}'.format(base_model_name,model_conf.MODEL_DICT.keys()))
+            raise ('{} not in {}'.format(base_model_name, model_conf.MODEL_DICT.keys()))
         return
 
-    def build(self, class_size, l2_weight_decay_alpha = 0.):
-        '''
+    def build(self, class_size, l2_weight_decay_alpha=0.):
+        """
         Build base model from the pre-trained model
         :param class_size: number of classes in Dense layer
         :param l2_weight_decay_alpha:
         :return: a Keras network model
-        '''
+        """
         cfg = eval("model_conf.MODEL_DICT['{}']".format(self.base_model_name))
         image_size = cfg['image_size']
         IMG_SHAPE = (image_size, image_size, 3)
@@ -39,7 +57,6 @@ class TransferModel():
                         layer.add_loss(tf.keras.regularizers.l2(l2_weight_decay_alpha)(layer.kernel))
                     if hasattr(layer, 'bias_regularizer') and layer.use_bias:
                         layer.add_loss(tf.keras.regularizers.l2(l2_weight_decay_alpha)(layer.bias))
-
 
         # Freezing (or setting layer.trainable = False) prevents weights in these layers
         # from being updated during training.
@@ -72,9 +89,7 @@ class TransferModel():
         return model_sequential, image_size, fine_tune_at
 
 
-
 if __name__ == '__main__':
-
     mmaker = TransferModel()
     # build the basic model
     model = mmaker.build()
