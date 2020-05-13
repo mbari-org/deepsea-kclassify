@@ -1,5 +1,12 @@
 # AVEDAC Keras Image Classifier Changelog
 
+## [1.0.6](http://bitbucket.org/mbari/avedac-kclassify/compare/v1.0.5...v1.0.6) (2020-05-13)
+
+
+### Bug Fixes
+
+* save labels correctly from indexed dictionary ([e24fa4c](http://bitbucket.org/mbari/avedac-kclassify/commits/e24fa4c9f4ff1f9f198876451c9a28ebd6f6e2bb))
+
 ## [1.0.5](http://bitbucket.org/mbari/avedac-kclassify/compare/v1.0.4...v1.0.5) (2020-05-08)
 
 
