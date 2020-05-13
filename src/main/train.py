@@ -450,15 +450,22 @@ def log_metrics(train_output, image_dir):
             wandb.config.update({"best_val_binary_accuracy": acc[train_output.best_epoch]})
 
 
-def log_artifacts(train_output, image_dir, output_dir):
+def log_artifacts(model_path, image_dir, model_artifacts):
+    """
+    Logs artifacts to the MLflow server
+    :param model_path:  full path to directory with training output artifacts
+    :param image_dir:  full path to directory with any image artifacts, e.g. plots
+    :param model_artifacts:  full path to output directory to save
+    :return: 
+    """
     # log generated plots to images directory
     for figure_path in glob.iglob(image_dir + '**/*', recursive=True):
         mlflow.log_artifact(local_path=figure_path, artifact_path="images")
     # log model
-    log_model(train_output, artifact_path="model")
+    log_model(model_path, artifact_path="model")
     # write out TensorFlow events as a run artifact in the events directory
     print("Uploading TensorFlow events as a run artifact.")
-    for artifact in glob.iglob(output_dir + '**/*.*', recursive=True):
+    for artifact in glob.iglob(model_artifacts + '**/*.*', recursive=True):
         mlflow.log_artifact(local_path=artifact, artifact_path="events")
 
 
@@ -530,6 +537,7 @@ if __name__ == '__main__':
                           "labels": ','.join(train_output.labels),
                           "image_mean": ','.join(map(str, train_output.image_mean.tolist())),
                           "image_std": ','.join(map(str, train_output.image_std.tolist()))}
+
 
                 log_params(params)
                 log_metrics(train_output, os.path.join(output_dir, 'images'))

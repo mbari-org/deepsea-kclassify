@@ -142,9 +142,11 @@ def log_model(train_output, artifact_path):
         conf = {
             "image_dims": 'x'.join(map(str, image_dims)), #image dimensions the Keras model expects.
             "image_mean": ",".join(map(str, train_output.image_mean)),#image mean of training images
-            "image_std": ",".join(map(str, train_output.image_std)),#image standard deviation of training images
-            "labels": ",".join(map(str, train_output.labels)),#labels for the classes this model can predict.
+            "image_std": ",".join(map(str, train_output.image_std))#image standard deviation of training images
         }
+        # labels for the classes this model can predict
+        pd.DataFrame(data=train_output.labels).to_csv(s.path.join(data_path, "labels.csv"), index=False)
+
         with open(os.path.join(data_path, "conf.yaml"), "w") as f:
             yaml.safe_dump(conf, stream=f)
 
@@ -173,8 +175,10 @@ def _load_pyfunc(path):
     """
     with open(os.path.join(path, "conf.yaml"), "r") as f:
         conf = yaml.safe_load(f)
+    with open(os.path.join(path, "labels.csv"), "r") as f:
+        labels = pd.read_csv(f).values[:, 1].tolist()
+
     keras_model_path = os.path.join(path, "keras_model")
-    labels = conf["labels"].split(",")
     image_dims = np.array([np.int32(x) for x in conf["image_dims"].split("x")])
     image_mean = np.array([np.float32(x) for x in conf["image_mean"].split(",")])
     image_std = np.array([np.float32(x) for x in conf["image_std"].split(",")])
