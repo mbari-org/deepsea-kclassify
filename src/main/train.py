@@ -534,7 +534,6 @@ if __name__ == '__main__':
 
                 # log model and normalization parameters needed for inference
                 params = {'image_size': "{}x{}".format(train_output.image_size, train_output.image_size),
-                          "labels": ','.join(train_output.labels),
                           "image_mean": ','.join(map(str, train_output.image_mean.tolist())),
                           "image_std": ','.join(map(str, train_output.image_std.tolist()))}
 

@@ -144,8 +144,10 @@ def log_model(train_output, artifact_path):
             "image_mean": ",".join(map(str, train_output.image_mean)),#image mean of training images
             "image_std": ",".join(map(str, train_output.image_std))#image standard deviation of training images
         }
-        # labels for the classes this model can predict
-        pd.DataFrame(data=train_output.labels).to_csv(s.path.join(data_path, "labels.csv"), index=False)
+        # labels for the classes this model can predict with integer id the model outputs
+        df = pd.DataFrame.from_dict(train_output.labels, orient="index", columns=['id'])
+        df.index.name = 'class_name'
+        df.to_csv(os.path.join(data_path, "labels.csv"), index=False)
 
         with open(os.path.join(data_path, "conf.yaml"), "w") as f:
             yaml.safe_dump(conf, stream=f)
@@ -175,8 +177,9 @@ def _load_pyfunc(path):
     """
     with open(os.path.join(path, "conf.yaml"), "r") as f:
         conf = yaml.safe_load(f)
+    # Get list of class names sorted by their id
     with open(os.path.join(path, "labels.csv"), "r") as f:
-        labels = pd.read_csv(f).values[:, 1].tolist()
+        labels = pd.read_csv(f).sort_values(by='id')['class_name'].values.tolist()
 
     keras_model_path = os.path.join(path, "keras_model")
     image_dims = np.array([np.int32(x) for x in conf["image_dims"].split("x")])
