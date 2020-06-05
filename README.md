@@ -54,9 +54,7 @@ Build docker image for GPU training.
 ./build.sh GPU
 ```
 You can also build a CPU version for testing on your desktop but this is not recommended.
-If using the CPU,
-* replace gpu with cpu in MLproject 
-* replace gpu with cpu in src/test/nose/Dockerfile
+If using the CPU
 ```bash
     ./build.sh CPU
 ```

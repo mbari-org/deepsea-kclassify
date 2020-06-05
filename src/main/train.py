@@ -549,18 +549,19 @@ if __name__ == '__main__':
             has_wandb = False
 
         with tf.Session():
-            # with mlflow.start_run(run_name=run_id):
-            output_dir = tempfile.mkdtemp()
-            train_output = Train().train_model(args, output_dir)
+            with mlflow.start_run(run_name=run_id):
+                mlflow.log_param('run_name', run_id)
+                output_dir = tempfile.mkdtemp()
+                train_output = Train().train_model(args, output_dir)
 
-            # log model and normalization parameters needed for inference
-            params = {'image_size': "{}x{}".format(train_output.image_size, train_output.image_size),
-                      "image_mean": ','.join(map(str, train_output.image_mean.tolist())),
-                      "image_std": ','.join(map(str, train_output.image_std.tolist()))}
+                # log model and normalization parameters needed for inference
+                params = {'image_size': "{}x{}".format(train_output.image_size, train_output.image_size),
+                          "image_mean": ','.join(map(str, train_output.image_mean.tolist())),
+                          "image_std": ','.join(map(str, train_output.image_std.tolist()))}
 
-            log_params(params)
-            log_metrics(train_output, os.path.join(output_dir, 'images'))
-            log_artifacts(train_output, os.path.join(output_dir, 'images'), output_dir)
+                log_params(params)
+                log_metrics(train_output, os.path.join(output_dir, 'images'))
+                log_artifacts(train_output, os.path.join(output_dir, 'images'), output_dir)
     except Exception as ex:
         print('Model training failed ' + str(ex))
         exit(-1)

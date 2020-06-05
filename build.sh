@@ -5,8 +5,8 @@ if [ "$#" -ne 1 ] ; then
 fi
 if [ $1 != "CPU" ]; then
     # GPU recommended
-    docker build --build-arg TF_VERSION=1.13.0rc1-gpu-py3 --build-arg DOCKER_GID=`id -u`  --build-arg DOCKER_UID=`id -g` -t mbari/avedac-gpu-kclassify .
+    docker build --build-arg TF_VERSION=1.13.0rc1-gpu-py3 --build-arg DOCKER_GID=`id -u`  --build-arg DOCKER_UID=`id -g` -t mbari/avedac-kclassify .
 else
     # To build for CPU only
-    docker build --build-arg TF_VERSION=1.13.0rc1-py3 --build-arg DOCKER_GID=`id -u`  --build-arg DOCKER_UID=`id -g`  -t mbari/avedac-cpu-kclassify .
+    docker build --build-arg TF_VERSION=1.13.0rc1-py3 --build-arg DOCKER_GID=`id -u`  --build-arg DOCKER_UID=`id -g`  -t mbari/avedac-kclassify .
 fi

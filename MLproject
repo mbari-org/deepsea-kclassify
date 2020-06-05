@@ -1,7 +1,7 @@
 name: avedac-kclassify
 
 docker_env:
-  image:  mbari/avedac-cpu-kclassify
+  image:  mbari/avedac-kclassify
   volumes:  ["$PWD/.env:/.env"]
   environment: [["ENV", "/.env"]]
 
