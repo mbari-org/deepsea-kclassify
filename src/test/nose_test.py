@@ -81,11 +81,28 @@ def teardown_module(module):
     print('teardown_module')
 
 
+def create_bucket(s3, name):
+    """
+    Creates a bucket and skips over bucket exists exceptions
+    :param s3:
+    :param name:
+    :return:
+    """
+    try:
+        s3.create_bucket(Bucket=name)
+        print('Creating bucket ' + name)
+    except botocore.exceptions.ClientError as e:
+        if 'BucketAlreadyOwnedByYou' == e.__class__.__name__:
+            print('BucketAlreadyOwnedByYou')
+        else:
+            raise e
+
+
 def custom_setup_function():
     endpoint_url = os.environ['MLFLOW_S3_ENDPOINT_URL']
     s3 = boto3.resource('s3', endpoint_url=endpoint_url)
-    s3.create_bucket(Bucket='experiment')
-    s3.create_bucket(Bucket='test')
+    create_bucket(s3, 'experiment')
+    create_bucket(s3, 'test')
     config = TransferConfig(multipart_threshold=1024 * 25, max_concurrency=10,
                             multipart_chunksize=1024 * 25, use_threads=True)
     s3.meta.client.upload_file('/data/catsdogs.tar.gz', 'test', 'catsdogs.tar.gz',
@@ -110,10 +127,10 @@ def custom_teardown_function():
 def test_train():
     print('<============================ running test_train ============================ >')
     try:
-        # Create experiment called test and put results in the bucket s3://test
-        print('Creating experiment test and storing results in s3://test bucket')
-        mlflow.create_experiment('test2', 's3://experiment')
+        # Create experiment called test and put results in the bucket s3://experiment
+        print('Creating experiment test and storing results in s3://experiment bucket')
+        mlflow.create_experiment('test', 's3://experiment')
         print('Running experiment...')
-        mlflow.run(os.getcwd(), experiment_name='test2', use_conda=False)
+        mlflow.run(os.getcwd(), experiment_name='test', use_conda=False)
     except Exception as ex:
-        raise (ex)
+        raise ex

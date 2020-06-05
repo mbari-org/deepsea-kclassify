@@ -54,8 +54,9 @@ Build docker image for GPU training.
 ./build.sh GPU
 ```
 You can also build a CPU version for testing on your desktop but this is not recommended.
-If using the CPU, replace gpu with cpu in toMLproject and src/nose/Dockerfile, e.g.
-mbari/avedac-cpu-kclassify not mbari/avedac-gpu-kclassify 
+If using the CPU,
+* replace gpu with cpu in MLproject 
+* replace gpu with cpu in src/test/nose/Dockerfile
 ```bash
     ./build.sh CPU
 ```

@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-__author__ = "Danelle Cline"
+__author__ = "Danelle Cline, "
 __copyright__ = "Copyright 2020, MBARI"
 __credits__ = ["MBARI"]
 __license__ = "GPL"
@@ -23,6 +23,7 @@ import threading
 import wandb
 import mlflow
 
+
 class Metrics(tensorflow.keras.callbacks.Callback):
 
     def __init__(self, val_data, batch_size, labels):
@@ -41,8 +42,8 @@ class Metrics(tensorflow.keras.callbacks.Callback):
         else:
             mlflow.log_metric(key='binary_accuracy', value=logs['binary_accuracy'], step=epoch)
             mlflow.log_metric(key='val_binary_accuracy', value=logs['val_binary_accuracy'], step=epoch)
-        mlflow.log_metric(key='loss',value=logs.get('loss'), step=epoch)
-        mlflow.log_metric(key='val_loss',value=logs.get('val_loss'), step=epoch)
+        mlflow.log_metric(key='loss', value=logs.get('loss'), step=epoch)
+        mlflow.log_metric(key='val_loss', value=logs.get('val_loss'), step=epoch)
         self.epoch_count += 1
         batches = len(self.validation_data)
         total = batches * self.batch_size
@@ -53,7 +54,7 @@ class Metrics(tensorflow.keras.callbacks.Callback):
         for label in self.labels:
             class_map[label_index] = label
             label_index += 1
-        re_map = {label:index for index, label in class_map.items()}
+        re_map = {label: index for index, label in class_map.items()}
         for batch in range(batches):
             thread1 = threading.Thread(target=self.parse_batch(batch, val_true, val_predict))
             thread1.start()
@@ -70,27 +71,27 @@ class Metrics(tensorflow.keras.callbacks.Callback):
         _val_recall = sklearn.metrics.recall_score(label_true, label_predict, labels=self.labels, average=None)
         _val_precision = sklearn.metrics.precision_score(label_true, label_predict, labels=self.labels, average=None)
         for label in self.labels:
-            f1_log = {label+'_f1':_val_f1[re_map[label]]}
-            precision_log = {label+'_precision':_val_precision[re_map[label]]}
-            recall_log = {label+'_recall': _val_recall[re_map[label]]}
+            f1_log = {label + '_f1': _val_f1[re_map[label]]}
+            precision_log = {label + '_precision': _val_precision[re_map[label]]}
+            recall_log = {label + '_recall': _val_recall[re_map[label]]}
             wandb.log(f1_log, step=epoch, commit=False)
             wandb.log(precision_log, step=epoch, commit=False)
             wandb.log(recall_log, step=epoch, commit=False)
-            mlflow.log_metric(key=label+'_f1', value=_val_f1[re_map[label]], step=epoch)
-            mlflow.log_metric(key=label+'_precision', value=_val_precision[re_map[label]], step=epoch)
-            mlflow.log_metric(key=label+'_recall', value=_val_recall[re_map[label]], step=epoch)
+            mlflow.log_metric(key=label + '_f1', value=_val_f1[re_map[label]], step=epoch)
+            mlflow.log_metric(key=label + '_precision', value=_val_precision[re_map[label]], step=epoch)
+            mlflow.log_metric(key=label + '_recall', value=_val_recall[re_map[label]], step=epoch)
         return
 
     def parse_batch(self, batch, val_true, val_predict):
         try:
-            xVal, yVal = next(self.validation_data)
+            x_val, y_val = next(self.validation_data)
         except StopIteration:
             return
 
         for i in range(self.batch_size):
             try:
-                val_predict[batch * self.batch_size + i] = np.asarray(self.model.predict_classes(xVal))[i]
-                val_true[batch * self.batch_size + i] = np.argmax(yVal, axis=1)[i]
+                val_predict[batch * self.batch_size + i] = np.asarray(self.model.predict_classes(x_val))[i]
+                val_true[batch * self.batch_size + i] = np.argmax(y_val, axis=1)[i]
                 self.val_count += 1
             except IndexError:
                 self.trim_start = self.val_count

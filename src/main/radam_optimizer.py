@@ -28,7 +28,7 @@ class RAdam(tensorflow.keras.optimizers.Optimizer):
 
     def __init__(self, lr=0.001, beta_1=0.9, beta_2=0.999,
                  epsilon=None, decay=0., weight_decay=0., **kwargs):
-        '''
+        """
 
         :param lr: float >= 0. Learning rate.
         :param beta_1: beta_1: float, 0 < beta < 1. Generally close to 1.
@@ -36,8 +36,7 @@ class RAdam(tensorflow.keras.optimizers.Optimizer):
         :param epsilon: epsilon: float >= 0. Fuzz factor. If `None`, defaults to `K.epsilon()`.
         :param decay: decay: float >= 0. Learning rate decay over each update.
         :param weight_decay: weight_decay: float >= 0. Weight decay for each param.
-        :param kwargs:
-        '''
+        """
         super(RAdam, self).__init__(**kwargs)
         with K.name_scope(self.__class__.__name__):
             self.iterations = K.variable(0, dtype='int64', name='iterations')

@@ -34,8 +34,6 @@ import mlflow
 import mlflow.keras
 from mlflow.utils import PYTHON_VERSION
 from mlflow.utils.file_utils import TempDir
-from PIL import Image
-from io import BytesIO
 
 MAX_BATCH = 1000
 

@@ -32,6 +32,7 @@ from wandb.keras import WandbCallback
 from metrics import Metrics
 from tensorflow.keras.callbacks import TensorBoard, ModelCheckpoint
 from transfer_model import TransferModel
+from sklearn.metrics import classification_report, confusion_matrix
 from stopping import Stopping
 from argparser import ArgParser
 from radam_optimizer import RAdam
@@ -56,7 +57,7 @@ def sigterm_handler(signal, frame):
 class TrainOutput():
 
     def __init__(self, model, train, image_size, labels, class_size, history, image_mean,
-                 image_std, best_epoch):
+                 image_std, best_epoch, y_test, y_pred):
         self.model = model
         self.train = train
         self.image_size = image_size
@@ -66,6 +67,8 @@ class TrainOutput():
         self.image_mean = image_mean
         self.image_std = image_std
         self.best_epoch = best_epoch
+        self.y_test = y_test
+        self.y_pred = y_pred
 
 
 class Train:
@@ -257,16 +260,16 @@ class Train:
 
         # Get label size and calculate mean/std from datagen
         print('Fetching class labels and calculating normalization parameters')
-        datagen = tf.keras.preprocessing.image.ImageDataGenerator(rescale=1. / 255)
-        gen = datagen.flow_from_directory(train_dir)
+        data_gen = tf.keras.preprocessing.image.ImageDataGenerator(rescale=1. / 255)
+        gen = data_gen.flow_from_directory(train_dir)
         labels = gen.class_indices
-        for l in labels:
-            print('found label ' + l)
+        for label in labels:
+            print('found label ' + label)
         class_size = len(labels)
-        trainX, _ = gen.next()
+        train_x, _ = gen.next()
         means = []
         stds = []
-        for x in trainX:
+        for x in train_x:
             means.append(np.mean(x, axis=(0, 1)))
             stds.append(np.std(x, axis=(0, 1)))
         mean = np.mean(means, axis=(0))
@@ -401,9 +404,9 @@ class Train:
 
         # compute quantities required for featurewise normalization
         # (std, mean, and principal components if ZCA whitening is applied)
-        train_datagen.fit(trainX)
+        train_datagen.fit(train_x)
         if args.val_tar:
-            val_datagen.fit(trainX)
+            val_datagen.fit(train_x)
 
         train = Train()
 
@@ -417,7 +420,20 @@ class Train:
                                                                  metric_type=tf.keras.metrics.categorical_accuracy,
                                                                  early_stop=args.early_stop)
 
-        return TrainOutput(model, train, image_size, labels, class_size, history, mean, std, best_epoch)
+        # load model for best epoch and compute data for PR/CM
+        checkpoint_path = '/{}/checkpoints.best.h5'.format(output_dir)
+        if os.path.exists(checkpoint_path):
+            print('Loading model weights from {}'.format(checkpoint_path))
+            model.load_weights(checkpoint_path)
+        pred = model.predict_generator(validation_generator, args.batch_size)
+        y_pred = np.argmax(pred, axis=1)
+        print('===========Confusion Matrix========')
+        print(confusion_matrix(validation_generator.classes, y_pred))
+        print('===========Classification==========')
+        print(classification_report(validation_generator.classes, y_pred, target_names=labels))
+
+        return TrainOutput(model, train, image_size, labels, class_size, history, mean, std, best_epoch,
+                           validation_generator.classes, y_pred)
 
 
 def log_params(params):
@@ -449,6 +465,11 @@ def log_metrics(train_output, image_dir):
         if has_wandb:
             wandb.config.update({"best_val_binary_accuracy": acc[train_output.best_epoch]})
 
+    if has_wandb:
+        wandb.log({'roc': wandb.plots.ROC(train_output.y_test, train_output.y_pred, train_output.labels)})
+        wandb.log({'pr': wandb.plots.precision_recall(train_output.y_test, train_output.y_pred, train_output.labels)})
+        wandb.sklearn.plot_confusion_matrix(train_output.y_test, train_output, train_output.y_pred, train_output.labels)
+
 
 def log_artifacts(model_path, image_dir, model_artifacts):
     """
@@ -475,7 +496,7 @@ def setup_wandb():
     :return: wandb run object
     """
     keys = ['WANDB_ENTITY', 'WANDB_USERNAME', 'WANDB_API_KEY', 'WANDB_PROJECT',
-                     'WANDB_GROUP', ]
+            'WANDB_GROUP', ]
     has_wandb_keys = True
     for key in keys:
         if key not in env.keys():
@@ -528,19 +549,18 @@ if __name__ == '__main__':
             has_wandb = False
 
         with tf.Session():
-            with mlflow.start_run(run_name=run_id):
-                output_dir = tempfile.mkdtemp()
-                train_output = Train().train_model(args, output_dir)
+            # with mlflow.start_run(run_name=run_id):
+            output_dir = tempfile.mkdtemp()
+            train_output = Train().train_model(args, output_dir)
 
-                # log model and normalization parameters needed for inference
-                params = {'image_size': "{}x{}".format(train_output.image_size, train_output.image_size),
-                          "image_mean": ','.join(map(str, train_output.image_mean.tolist())),
-                          "image_std": ','.join(map(str, train_output.image_std.tolist()))}
+            # log model and normalization parameters needed for inference
+            params = {'image_size': "{}x{}".format(train_output.image_size, train_output.image_size),
+                      "image_mean": ','.join(map(str, train_output.image_mean.tolist())),
+                      "image_std": ','.join(map(str, train_output.image_std.tolist()))}
 
-
-                log_params(params)
-                log_metrics(train_output, os.path.join(output_dir, 'images'))
-                log_artifacts(train_output, os.path.join(output_dir, 'images'), output_dir)
+            log_params(params)
+            log_metrics(train_output, os.path.join(output_dir, 'images'))
+            log_artifacts(train_output, os.path.join(output_dir, 'images'), output_dir)
     except Exception as ex:
         print('Model training failed ' + str(ex))
         exit(-1)

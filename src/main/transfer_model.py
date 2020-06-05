@@ -69,7 +69,7 @@ class TransferModel:
             for layer in base_model.layers[:fine_tune_at]:
                 layer.trainable = False
 
-        # if slimming the model, remove every other filter from conv2d layers - not this does not work
+        # if slimming the model, remove every other filter from conv2d layers - note this does not work
         # for all models.
         if cfg['slim']:
             surgeon = Surgeon(base_model)
