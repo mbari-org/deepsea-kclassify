@@ -145,7 +145,7 @@ def log_model(train_output, artifact_path):
         # labels for the classes this model can predict with integer id the model outputs
         df = pd.DataFrame.from_dict(train_output.labels, orient="index", columns=['id'])
         df.index.name = 'class_name'
-        df.to_csv(os.path.join(data_path, "labels.csv"), index=False)
+        df.to_csv(os.path.join(data_path, "labels.csv"))
 
         with open(os.path.join(data_path, "conf.yaml"), "w") as f:
             yaml.safe_dump(conf, stream=f)
