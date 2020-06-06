@@ -395,6 +395,7 @@ class Train:
                                                                        batch_size=args.batch_size,
                                                                        class_mode='categorical',
                                                                        subset='training')
+
                 print('Validation data:')
                 validation_generator = train_datagen.flow_from_directory(train_dir,
                                                                          target_size=(image_size, image_size),
@@ -425,6 +426,8 @@ class Train:
         if os.path.exists(checkpoint_path):
             print('Loading model weights from {}'.format(checkpoint_path))
             model.load_weights(checkpoint_path)
+
+        print('Running prediction on validation data...')
         pred = model.predict_generator(validation_generator, args.batch_size)
         y_pred = np.argmax(pred, axis=1)
         print('===========Confusion Matrix========')
@@ -433,7 +436,7 @@ class Train:
         print(classification_report(validation_generator.classes, y_pred, target_names=labels))
 
         return TrainOutput(model, train, image_size, labels, class_size, history, mean, std, best_epoch,
-                           validation_generator.classes, y_pred)
+                           validation_generator.classes, pred)
 
 
 def log_params(params):
@@ -466,9 +469,11 @@ def log_metrics(train_output, image_dir):
             wandb.config.update({"best_val_binary_accuracy": acc[train_output.best_epoch]})
 
     if has_wandb:
-        wandb.log({'roc': wandb.plots.ROC(train_output.y_test, train_output.y_pred, train_output.labels)})
-        wandb.log({'pr': wandb.plots.precision_recall(train_output.y_test, train_output.y_pred, train_output.labels)})
-        wandb.sklearn.plot_confusion_matrix(train_output.y_test, train_output, train_output.y_pred, train_output.labels)
+        labels = np.array(list(train_output.labels.items())) # convert dict to array
+        wandb.log({'roc': wandb.plots.ROC(train_output.y_test, train_output.y_pred, labels)})
+        wandb.log({'pr': wandb.plots.precision_recall(train_output.y_test, train_output.y_pred, labels)})
+        wandb.sklearn.plot_confusion_matrix(train_output.y_test, train_output, train_output.y_pred, labels)
+        wandb.sklearn.plot_confusion_matrix(train_output.y_test, np.argmax(train_output.y_pred, axis=1), labels)
 
 
 def log_artifacts(model_path, image_dir, model_artifacts):
