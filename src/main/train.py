@@ -472,7 +472,6 @@ def log_metrics(train_output, image_dir):
         labels = np.array(list(train_output.labels.items())) # convert dict to array
         wandb.log({'roc': wandb.plots.ROC(train_output.y_test, train_output.y_pred, labels)})
         wandb.log({'pr': wandb.plots.precision_recall(train_output.y_test, train_output.y_pred, labels)})
-        wandb.sklearn.plot_confusion_matrix(train_output.y_test, train_output, train_output.y_pred, labels)
         wandb.sklearn.plot_confusion_matrix(train_output.y_test, np.argmax(train_output.y_pred, axis=1), labels)
 
 
