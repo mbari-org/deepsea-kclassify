@@ -1,5 +1,12 @@
 # AVEDAC Keras Image Classifier Changelog
 
+## [1.0.8](http://bitbucket.org/mbari/avedac-kclassify/compare/v1.0.7...v1.0.8) (2020-06-06)
+
+
+### Bug Fixes
+
+* fixed bug in wand pr/roc/cm logging ([ba8befd](http://bitbucket.org/mbari/avedac-kclassify/commits/ba8befd456df1f0002986ecfe8dc29c83eb7b499))
+
 ## [1.0.7](http://bitbucket.org/mbari/avedac-kclassify/compare/v1.0.6...v1.0.7) (2020-06-05)
 
 
