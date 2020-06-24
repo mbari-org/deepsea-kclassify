@@ -1,5 +1,12 @@
 # AVEDAC Keras Image Classifier Changelog
 
+## [1.0.9](http://bitbucket.org/mbari/avedac-kclassify/compare/v1.0.8...v1.0.9) (2020-06-24)
+
+
+### Bug Fixes
+
+* **requirements.txt:** bumped wandb to available version ([fb39af5](http://bitbucket.org/mbari/avedac-kclassify/commits/fb39af508d744d8d3d43dcb5abf7dffa4fdbf5bc))
+
 ## [1.0.8](http://bitbucket.org/mbari/avedac-kclassify/compare/v1.0.7...v1.0.8) (2020-06-06)
 
 
