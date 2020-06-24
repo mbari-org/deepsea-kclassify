@@ -66,9 +66,6 @@ class ArgParser:
         self.parser.add_argument("--notes", help="Notes for the experiment", nargs='?', action='store', default='',
                                  type=str)
         self.parser.add_argument("--verbose", help="Verbose output", nargs='?', action='store', default=0, type=int)
-        self.parser.add_argument("--balance_data", type=self.boolean_string,
-                                 help="Balance Training data using imbalanced-learn using Random Over Sampling ROS",
-                                 default=False)
 
     def parse_args(self):
         self.args = self.parser.parse_args()
@@ -97,7 +94,6 @@ class ArgParser:
         print("train_tar:", self.args.train_tar)
         if self.args.val_tar:
             print("val_tar:", self.args.val_tar)
-        print("balance_data:", self.args.balance_data)
 
 
 if __name__ == '__main__':

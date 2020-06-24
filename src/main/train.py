@@ -36,7 +36,6 @@ from sklearn.metrics import classification_report, confusion_matrix
 from stopping import Stopping
 from argparser import ArgParser
 from radam_optimizer import RAdam
-import imblearn
 import plot
 import utils
 import time
@@ -282,126 +281,34 @@ class Train:
 
         model, image_size, fine_tune_at = TransferModel(args.base_model).build(class_size, args.l2_weight_decay_alpha)
 
-        # Flow training images in batches of <batch_size> using train_datagen generator
-        if args.balance_data is True:
-            print('Balancing data')
+        if args.val_tar:
+            # train/val flow from separate directories
+            print('Training data:')
+            training_generator = train_datagen.flow_from_directory(train_dir,
+                                                                   target_size=(image_size, image_size),
+                                                                   batch_size=args.batch_size,
+                                                                   class_mode='categorical')
 
-            blc_dir = tempfile.mkdtemp(suffix=None, prefix='blc_')
-
-            if args.val_tar:
-                validation_generator = train_datagen.flow_from_directory(val_dir,
-                                                                         target_size=(image_size, image_size),
-                                                                         batch_size=args.batch_size,
-                                                                         class_mode='categorical')
-                training_generator = train_datagen.flow_from_directory(train_dir,
-                                                                       target_size=(image_size, image_size),
-                                                                       batch_size=args.batch_size,
-                                                                       class_mode='categorical')
-            else:
-                validation_generator = train_datagen.flow_from_directory(train_dir,
-                                                                         target_size=(image_size, image_size),
-                                                                         batch_size=args.batch_size,
-                                                                         class_mode='categorical',
-                                                                         subset='validation')
-                training_generator = train_datagen.flow_from_directory(train_dir,
-                                                                       target_size=(image_size, image_size),
-                                                                       batch_size=args.batch_size,
-                                                                       class_mode='categorical',
-                                                                       subset='training')
-
-            species = training_generator.class_indices
-
-            train_names, val_names = [], []
-            for f in training_generator.filenames:
-                train_names.append([f])
-            for f in validation_generator.filenames:
-                val_names.append([f])
-
-            blc_training_gen, t_batch = imblearn.keras.balanced_batch_generator(
-                train_names,
-                training_generator.labels,
-                batch_size=len(training_generator.labels),
-                sampler=imblearn.over_sampling.RandomOverSampler())
-
-            def make_blc_dir(blc_dir, blc_species):
-                os.mkdir(blc_dir)
-                for specie in blc_species:
-                    os.mkdir(os.path.join(blc_dir, specie))
-
-            def balance_copy(b_dir, gen, species, train_dir):
-                fname, _ = next(gen)
-                make_blc_dir(b_dir, species)
-                bal_nums = list(range(0, len(fname)))
-                bal_nums_c = 0
-                for f in fname:
-                    fname_list = f[0]
-                    dirname, fname_target = fname_list.split('/')
-                    if os.path.exists(os.path.join(b_dir, os.path.join(dirname, fname_target))):
-                        fname_target = str(bal_nums[bal_nums_c]) + fname_target
-                        bal_nums_c += 1
-                    shutil.copy2(os.path.join(train_dir, fname_list), os.path.join(b_dir, os.path.join(dirname,
-                                                                                                       fname_target)))
-
-            blc_train_dir = os.path.join(blc_dir, 'blc_train')
-            balance_copy(blc_train_dir, blc_training_gen, species, train_dir)
-
-            if args.val_tar:
-                # train/val flow from separate directories
-                print('Training data:')
-                training_generator = train_datagen.flow_from_directory(blc_train_dir,
-                                                                       target_size=(image_size, image_size),
-                                                                       batch_size=args.batch_size,
-                                                                       class_mode='categorical')
-
-                print('Validation data:')
-                validation_generator = val_datagen.flow_from_directory(val_dir,
-                                                                       target_size=(image_size, image_size),
-                                                                       batch_size=args.batch_size,
-                                                                       class_mode='categorical')
-            else:
-                # split data into train/val from same directory
-                print('Training data:')
-                training_generator = train_datagen.flow_from_directory(blc_train_dir,
-                                                                       target_size=(image_size, image_size),
-                                                                       batch_size=args.batch_size,
-                                                                       class_mode='categorical',
-                                                                       subset='training')
-                print('Validation data:')
-                validation_generator = train_datagen.flow_from_directory(blc_train_dir,
-                                                                         target_size=(image_size, image_size),
-                                                                         batch_size=args.batch_size,
-                                                                         class_mode='categorical',
-                                                                         subset='validation')
-
+            print('Validation data:')
+            validation_generator = train_datagen.flow_from_directory(val_dir,
+                                                                     target_size=(image_size, image_size),
+                                                                     batch_size=args.batch_size,
+                                                                     class_mode='categorical')
         else:
-            if args.val_tar:
-                # train/val flow from separate directories
-                print('Training data:')
-                training_generator = train_datagen.flow_from_directory(train_dir,
-                                                                       target_size=(image_size, image_size),
-                                                                       batch_size=args.batch_size,
-                                                                       class_mode='categorical')
+            # split data into train/val from same directory
+            print('Training data:')
+            training_generator = train_datagen.flow_from_directory(train_dir,
+                                                                   target_size=(image_size, image_size),
+                                                                   batch_size=args.batch_size,
+                                                                   class_mode='categorical',
+                                                                   subset='training')
 
-                print('Validation data:')
-                validation_generator = train_datagen.flow_from_directory(val_dir,
-                                                                         target_size=(image_size, image_size),
-                                                                         batch_size=args.batch_size,
-                                                                         class_mode='categorical')
-            else:
-                # split data into train/val from same directory
-                print('Training data:')
-                training_generator = train_datagen.flow_from_directory(train_dir,
-                                                                       target_size=(image_size, image_size),
-                                                                       batch_size=args.batch_size,
-                                                                       class_mode='categorical',
-                                                                       subset='training')
-
-                print('Validation data:')
-                validation_generator = train_datagen.flow_from_directory(train_dir,
-                                                                         target_size=(image_size, image_size),
-                                                                         batch_size=args.batch_size,
-                                                                         class_mode='categorical',
-                                                                         subset='validation')
+            print('Validation data:')
+            validation_generator = train_datagen.flow_from_directory(train_dir,
+                                                                     target_size=(image_size, image_size),
+                                                                     batch_size=args.batch_size,
+                                                                     class_mode='categorical',
+                                                                     subset='validation')
 
         # compute quantities required for featurewise normalization
         # (std, mean, and principal components if ZCA whitening is applied)
