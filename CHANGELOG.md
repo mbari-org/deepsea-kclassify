@@ -5,6 +5,14 @@
 
 ### Bug Fixes
 
+* removed imblearn until sklearn issue is resolved ([85c4353](http://bitbucket.org/mbari/avedac-kclassify/commits/85c435304d2bb88a6b4f292f8532a4de9329ed22))
+* **requirements.txt:** bumped wandb to available version ([fb39af5](http://bitbucket.org/mbari/avedac-kclassify/commits/fb39af508d744d8d3d43dcb5abf7dffa4fdbf5bc))
+
+## [1.0.9](http://bitbucket.org/mbari/avedac-kclassify/compare/v1.0.8...v1.0.9) (2020-06-24)
+
+
+### Bug Fixes
+
 * **requirements.txt:** bumped wandb to available version ([fb39af5](http://bitbucket.org/mbari/avedac-kclassify/commits/fb39af508d744d8d3d43dcb5abf7dffa4fdbf5bc))
 
 ## [1.0.8](http://bitbucket.org/mbari/avedac-kclassify/compare/v1.0.7...v1.0.8) (2020-06-06)
