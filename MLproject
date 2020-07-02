@@ -1,7 +1,7 @@
 name: avedac-kclassify
 
 docker_env:
-  image:  mbari/avedac-kclassify
+  image:  mbari/deepsea-kclassify
   volumes:  ["$PWD/.env:/.env"]
   environment: [["ENV", "/.env"]]
 
@@ -23,7 +23,6 @@ entry_points:
       loss: {type:string, default: "categorical_crossentropy"}
       shear_range:  {type: float, default: 32}
       optimizer:  {type: string, default: "ranger"}
-      balance_data: {type: string, default: "False"}
       lr:  {type:float, default: .01}
       l2_weight_decay_alpha:  {type:float, default: 0.0}
 
