@@ -125,7 +125,7 @@ class Train:
         else:
             monitor = 'val_binary_accuracy'
 
-        early = Stopping(monitor=monitor, patience=2, verbose=1, restore_best_weights=True)
+        early = Stopping(monitor=monitor, patience=3, verbose=1, restore_best_weights=True)
         checkpoint_path = '{}/checkpoints.best.h5'.format(output_dir)
         checkpoint = ModelCheckpoint(checkpoint_path, monitor=monitor, verbose=1, save_best_only=True, mode='max')
         callbacks = [tensorboard, checkpoint]
