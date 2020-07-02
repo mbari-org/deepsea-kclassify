@@ -29,6 +29,6 @@ entry_points:
     command: "python /app/train.py --train_tar {train_tar} --val_tar {val_tar} --base_model {base_model} \
     --epochs={epochs} --augment_range {augment_range} --horizontal_flip {horizontal_flip} \
     --vertical_flip {vertical_flip} --early_stop {early_stop} --batch_size {batch_size}  --epochs {epochs} \
-    --k {k} --loss {loss} --shear_range {shear_range} --optimizer {optimizer} --balance_data {balance_data} \
+    --k {k} --loss {loss} --shear_range {shear_range} --optimizer {optimizer} \
     --lr {lr} --l2_weight_decay_alpha {l2_weight_decay_alpha} --normalize {normalize}"
 
