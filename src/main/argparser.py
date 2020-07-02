@@ -79,6 +79,7 @@ class ArgParser:
         return s == 'True'
 
     def summary(self):
+        print("normalize:", self.args.normalize)
         print("early_stop:", self.args.early_stop)
         print("notes:", self.args.notes)
         print("base_model:", self.args.base_model)
