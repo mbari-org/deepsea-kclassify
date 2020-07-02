@@ -63,21 +63,21 @@ resnet50 = dict(
 vgg16slim = dict(
     image_size = 224,
     model_instance="tf.keras.applications.VGG16",
-    fine_tune_at = 4,
+    fine_tune_at = -1,
     slim = True,
     has_depthwise_layers = False
 )
 vgg16 = dict(
     image_size = 224,
     model_instance="tf.keras.applications.VGG16",
-    fine_tune_at = 4,
+    fine_tune_at = -1,
     slim = False,
     has_depthwise_layers = False
 )
 vgg19 = dict(
     image_size = 224,
     model_instance="tf.keras.applications.VGG19",
-    fine_tune_at = 4,
+    fine_tune_at = -1,
     slim = False,
     has_depthwise_layers = False
 )
