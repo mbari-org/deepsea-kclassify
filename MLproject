@@ -21,7 +21,7 @@ entry_points:
       epochs: {type: int, default: 1}
       k: {type:int, default: 1}
       loss: {type:string, default: "categorical_crossentropy"}
-      shear_range:  {type: float, default: 32}
+      shear_range:  {type: float, default: 0.2}
       optimizer:  {type: string, default: "ranger"}
       lr:  {type:float, default: .01}
       l2_weight_decay_alpha:  {type:float, default: 0.0}

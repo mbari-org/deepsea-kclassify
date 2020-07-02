@@ -257,8 +257,8 @@ class Train:
         print(os.listdir(train_dir))
         print(os.listdir(val_dir))
 
-        # Get label size and calculate mean/std from datagen
-        print('Fetching class labels and calculating normalize parameters')
+        # Get label size and calculate mean/std from data_gen
+        print('Fetching class labels')
         data_gen = tf.keras.preprocessing.image.ImageDataGenerator(rescale=1. / 255)
         gen = data_gen.flow_from_directory(train_dir)
         labels = gen.class_indices
@@ -300,7 +300,9 @@ class Train:
 
         # compute quantities required for featurewise normalize
         # (std, mean, and principal components if ZCA whitening is applied)
+        print('Calculating normalization statistics')
         train_datagen.fit(train_x)
+        print('Normalize mean= {}, std= {}'.format(train_datagen.mean(), train_datagen.std()))
         if args.val_tar:
             val_datagen.fit(train_x)
 
@@ -329,8 +331,8 @@ class Train:
         print(confusion_matrix(validation_generator.classes, y_pred))
         print('===========Classification==========')
         print(classification_report(validation_generator.classes, y_pred, target_names=labels))
-        return TrainOutput(model, train, image_size, labels, class_size, history, train_datagen.mean,
-                           train_datagen.std, best_epoch, validation_generator.classes, pred)
+        return TrainOutput(model, train, image_size, labels, class_size, history, train_datagen.mean(),
+                           train_datagen.std(), best_epoch, validation_generator.classes, pred)
 
 
 def log_params(params):
