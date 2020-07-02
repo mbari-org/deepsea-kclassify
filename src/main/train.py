@@ -452,7 +452,7 @@ if __name__ == '__main__':
                 mlflow.log_param('run_name', run_id)
                 output_dir = tempfile.mkdtemp()
                 train_output = Train().train_model(args, output_dir)
-                if normalize:
+                if args.normalize:
                     normalize_str = "True"
                 else:
                     normalize_str = "False"
