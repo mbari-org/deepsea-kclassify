@@ -206,8 +206,8 @@ class Train:
                                                                             horizontal_flip=args.horizontal_flip,
                                                                             vertical_flip=args.vertical_flip,
                                                                             shear_range=args.shear_range,
-                                                                            featurewise_center=args.normalizatiton,
-                                                                            featurewise_std_normalization=args.normalizatiton)
+                                                                            featurewise_center=args.normalize,
+                                                                            featurewise_std_normalization=args.normalize)
 
             val_datagen = tf.keras.preprocessing.image.ImageDataGenerator(rescale=1. / 255,
                                                                           width_shift_range=args.augment_range,
@@ -216,8 +216,8 @@ class Train:
                                                                           horizontal_flip=args.horizontal_flip,
                                                                           vertical_flip=args.vertical_flip,
                                                                           shear_range=args.shear_range,
-                                                                          featurewise_center=args.normalizatiton,
-                                                                          featurewise_std_normalization=args.normalizatiton)
+                                                                          featurewise_center=args.normalize,
+                                                                          featurewise_std_normalization=args.normalize)
         else:
             train_datagen = tf.keras.preprocessing.image.ImageDataGenerator(rescale=1. / 255,
                                                                             width_shift_range=args.augment_range,
@@ -227,8 +227,8 @@ class Train:
                                                                             vertical_flip=args.vertical_flip,
                                                                             shear_range=args.shear_range,
                                                                             validation_split=0.2,
-                                                                            featurewise_center=args.normalizatiton,
-                                                                            featurewise_std_normalization=args.normalizatiton)
+                                                                            featurewise_center=args.normalize,
+                                                                            featurewise_std_normalization=args.normalize)
             val_datagen = train_datagen
 
         train_dir = os.path.join(output_dir, 'train')
