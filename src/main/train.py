@@ -302,7 +302,7 @@ class Train:
         # (std, mean, and principal components if ZCA whitening is applied)
         print('Calculating normalization statistics')
         train_datagen.fit(train_x)
-        print('Normalize mean= {}, std= {}'.format(train_datagen.mean(), train_datagen.std()))
+        print('Normalize mean: {}, std: {}'.format(train_datagen.mean(), train_datagen.std()))
         if args.val_tar:
             val_datagen.fit(train_x)
 
