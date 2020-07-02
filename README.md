@@ -1,6 +1,15 @@
-# avedac-kclassify #
-This is a dockerized implementation of the Keras (Keras Tensorflow, not pure Keras) 
-image classifier for use in ML workflows with the MLFlow framework.
+[MBARI](https://www.mbari.org/wp-content/uploads/2014/11/logo-mbari-3b.png)
+<p align="right">
+    <b> <img src="https://img.shields.io/badge/Supported%20Platforms-Windows%20%7C%20macOS%20%7C%20Linux-green" title="Supported Platforms"/> </b> <br>
+    <b> <img src="https://img.shields.io/badge/license-GPL-blue" title="license-GPL"/> </b> <br>
+</p>
+
+# About
+
+* deepsea-kclassify * is a dockerized implementation of Keras (Keras Tensorflow, not pure Keras) 
+image classifier for training and use in ML workflows with [MLFlow](https://github.com/mlflow/mlflow) 
+and optionally results can be logged to [wandb](https://www.wandb.com/).
+
 It trains images using Tensorflow Keras, with choices of
 
 Optimizers
@@ -22,7 +31,7 @@ Models
 * vgg19
 * mobilenetv2
 
-Data balancing
+Data balancing (current not supported)
 
 * on/off
 
@@ -33,9 +42,6 @@ Augmentations
 
 and all the typical hyperparameters needed for model training like 
 learning rate,  batch size, etc.
-
-Results are stored in a [MLFlow](https://github.com/mlflow/mlflow) tracking server and optionally in the
- [Wandb](http://wandb.com) service. 
 
 Following training, you should see results in a locally running mlfow server at http://127.0.0.1:5001, e.g.
 
@@ -80,7 +86,7 @@ AWS_SECRET_ACCESS_KEY=<your secret key>
 MLFLOW_TRACKING_URI=<your tracking URI, e.g. http://localhost:5000>
 (for local testing only - not needed for AWS) MLFLOW_S3_ENDPOINT_URL=<your S3 endpoint for minio only, e.g. http://localhost:9000>
 ```
-If logging to wandb also, add
+If using wandb also, add
 ```
 WANDB_API_KEY=<your API key>
 WANDB_USERNAME=<your username>
