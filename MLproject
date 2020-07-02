@@ -16,6 +16,7 @@ entry_points:
       horizontal_flip: {type: string, default: "False"}
       vertical_flip: {type: string, default: "False"}
       early_stop: {type: string, default: "False"}
+      normalize: {type: string, default: "True"}
       batch_size: {type: int, default: 32}
       epochs: {type: int, default: 1}
       k: {type:int, default: 1}
@@ -30,5 +31,5 @@ entry_points:
     --epochs={epochs} --augment_range {augment_range} --horizontal_flip {horizontal_flip} \
     --vertical_flip {vertical_flip} --early_stop {early_stop} --batch_size {batch_size}  --epochs {epochs} \
     --k {k} --loss {loss} --shear_range {shear_range} --optimizer {optimizer} --balance_data {balance_data} \
-    --lr {lr} --l2_weight_decay_alpha {l2_weight_decay_alpha}"
+    --lr {lr} --l2_weight_decay_alpha {l2_weight_decay_alpha} --normalize {normalize}"
 

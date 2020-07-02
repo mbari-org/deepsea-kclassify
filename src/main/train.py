@@ -206,8 +206,8 @@ class Train:
                                                                             horizontal_flip=args.horizontal_flip,
                                                                             vertical_flip=args.vertical_flip,
                                                                             shear_range=args.shear_range,
-                                                                            featurewise_center=True,
-                                                                            featurewise_std_normalization=True)
+                                                                            featurewise_center=args.normalizatiton,
+                                                                            featurewise_std_normalization=args.normalizatiton)
 
             val_datagen = tf.keras.preprocessing.image.ImageDataGenerator(rescale=1. / 255,
                                                                           width_shift_range=args.augment_range,
@@ -216,8 +216,8 @@ class Train:
                                                                           horizontal_flip=args.horizontal_flip,
                                                                           vertical_flip=args.vertical_flip,
                                                                           shear_range=args.shear_range,
-                                                                          featurewise_center=True,
-                                                                          featurewise_std_normalization=True)
+                                                                          featurewise_center=args.normalizatiton,
+                                                                          featurewise_std_normalization=args.normalizatiton)
         else:
             train_datagen = tf.keras.preprocessing.image.ImageDataGenerator(rescale=1. / 255,
                                                                             width_shift_range=args.augment_range,
@@ -227,8 +227,8 @@ class Train:
                                                                             vertical_flip=args.vertical_flip,
                                                                             shear_range=args.shear_range,
                                                                             validation_split=0.2,
-                                                                            featurewise_center=True,
-                                                                            featurewise_std_normalization=True)
+                                                                            featurewise_center=args.normalizatiton,
+                                                                            featurewise_std_normalization=args.normalizatiton)
             val_datagen = train_datagen
 
         train_dir = os.path.join(output_dir, 'train')
@@ -258,7 +258,7 @@ class Train:
         print(os.listdir(val_dir))
 
         # Get label size and calculate mean/std from datagen
-        print('Fetching class labels and calculating normalization parameters')
+        print('Fetching class labels and calculating normalize parameters')
         data_gen = tf.keras.preprocessing.image.ImageDataGenerator(rescale=1. / 255)
         gen = data_gen.flow_from_directory(train_dir)
         labels = gen.class_indices
@@ -266,18 +266,6 @@ class Train:
             print('found label ' + label)
         class_size = len(labels)
         train_x, _ = gen.next()
-        means = []
-        stds = []
-        for x in train_x:
-            means.append(np.mean(x, axis=(0, 1)))
-            stds.append(np.std(x, axis=(0, 1)))
-        mean = np.mean(means, axis=(0))
-        std = np.mean(stds, axis=(0))
-
-        train_datagen.mean = np.array(mean, dtype=np.float32).reshape((1, 1, 3))  # ordering: [R, G, B]
-        train_datagen.std = np.array(std, dtype=np.float32).reshape((1, 1, 3))
-        val_datagen.mean = np.array(mean, dtype=np.float32).reshape((1, 1, 3))
-        val_datagen.std = np.array(std, dtype=np.float32).reshape((1, 1, 3))
 
         model, image_size, fine_tune_at = TransferModel(args.base_model).build(class_size, args.l2_weight_decay_alpha)
 
@@ -310,7 +298,7 @@ class Train:
                                                                      class_mode='categorical',
                                                                      subset='validation')
 
-        # compute quantities required for featurewise normalization
+        # compute quantities required for featurewise normalize
         # (std, mean, and principal components if ZCA whitening is applied)
         train_datagen.fit(train_x)
         if args.val_tar:
@@ -341,9 +329,8 @@ class Train:
         print(confusion_matrix(validation_generator.classes, y_pred))
         print('===========Classification==========')
         print(classification_report(validation_generator.classes, y_pred, target_names=labels))
-
-        return TrainOutput(model, train, image_size, labels, class_size, history, mean, std, best_epoch,
-                           validation_generator.classes, pred)
+        return TrainOutput(model, train, image_size, labels, class_size, history, training_generator.mean,
+                           training_generator.std, best_epoch, validation_generator.classes, pred)
 
 
 def log_params(params):
@@ -382,9 +369,10 @@ def log_metrics(train_output, image_dir):
         wandb.sklearn.plot_confusion_matrix(train_output.y_test, np.argmax(train_output.y_pred, axis=1), labels)
 
 
-def log_artifacts(model_path, image_dir, model_artifacts):
+def log_artifacts(normalize, model_path, image_dir, model_artifacts):
     """
     Logs artifacts to the MLflow server
+    :param normalize: true if featurewise normalize on predict
     :param model_path:  full path to directory with training output artifacts
     :param image_dir:  full path to directory with any image artifacts, e.g. plots
     :param model_artifacts:  full path to output directory to save
@@ -394,7 +382,7 @@ def log_artifacts(model_path, image_dir, model_artifacts):
     for figure_path in glob.iglob(image_dir + '**/*', recursive=True):
         mlflow.log_artifact(local_path=figure_path, artifact_path="images")
     # log model
-    log_model(model_path, artifact_path="model")
+    log_model(normalize, model_path, artifact_path="model")
     # write out TensorFlow events as a run artifact in the events directory
     print("Uploading TensorFlow events as a run artifact.")
     for artifact in glob.iglob(model_artifacts + '**/*.*', recursive=True):
@@ -464,15 +452,19 @@ if __name__ == '__main__':
                 mlflow.log_param('run_name', run_id)
                 output_dir = tempfile.mkdtemp()
                 train_output = Train().train_model(args, output_dir)
-
-                # log model and normalization parameters needed for inference
+                if normalize:
+                    normalize_str = "True"
+                else:
+                    normalize_str = "False"
+                # log model and normalize parameters needed for inference
                 params = {'image_size': "{}x{}".format(train_output.image_size, train_output.image_size),
                           "image_mean": ','.join(map(str, train_output.image_mean.tolist())),
-                          "image_std": ','.join(map(str, train_output.image_std.tolist()))}
+                          "image_std": ','.join(map(str, train_output.image_std.tolist())),
+                          "normalize": normalize_str}
 
                 log_params(params)
                 log_metrics(train_output, os.path.join(output_dir, 'images'))
-                log_artifacts(train_output, os.path.join(output_dir, 'images'), output_dir)
+                log_artifacts(args.normalize, train_output, os.path.join(output_dir, 'images'), output_dir)
     except Exception as ex:
         print('Model training failed ' + str(ex))
         exit(-1)

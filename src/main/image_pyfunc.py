@@ -51,13 +51,14 @@ class KerasImageClassifierPyfunc(object):
     conda environment file.
     """
 
-    def __init__(self, graph, session, model, image_dims, image_mean, image_std,  labels):
+    def __init__(self, graph, session, model, image_dims, image_mean, image_std, normalize, labels):
         self._graph = graph
         self._session = session
         self._model = model
         self._image_dims = image_dims
         self._image_mean = image_mean
         self._image_std = image_std
+        self._normalize = normalize
         self._labels = labels
         probs_names = ["p({})".format(x) for x in labels]
         self._column_names = ["predicted_label", "predicted_label_id"] + probs_names
@@ -94,10 +95,11 @@ class KerasImageClassifierPyfunc(object):
         def decode_resize(bytes_data):
             image = tf.image.decode_jpeg(bytes_data[0], channels=3)
             image = tf.image.resize(image, self._image_dims)
-            image_mean = tf.reshape(self._image_mean, [1, 1, 3])
-            image_std = tf.reshape(self._image_std, [1, 1, 3])
-            image -= image_mean # normalize color with mean/std from training images
-            image += image_std
+            if self._normalize:
+                image_mean = tf.reshape(self._image_mean, [1, 1, 3])
+                image_std = tf.reshape(self._image_std, [1, 1, 3])
+                image -= image_mean # normalize color with mean/std from training images
+                image /= (image_std + 1.e-9)
             image /= 255.0  # normalize to [0,1] range
             return image
 
@@ -124,10 +126,11 @@ class KerasImageClassifierPyfunc(object):
                 return self._model.predict(next_image_batch, steps=1)
 
 
-def log_model(train_output, artifact_path):
+def log_model(normalize, train_output, artifact_path):
     """
     Log a KerasImageClassifierPyfunc model as an MLflow artifact for the current run.
 
+    :param normalize: true if featurewise center and normalize on predict
     :param train_output: output from the training model
     :param artifact_path: Run-relative artifact path this model is to be saved to.
     """
@@ -137,10 +140,15 @@ def log_model(train_output, artifact_path):
     with TempDir() as tmp:
         data_path = tmp.path("image_model")
         os.mkdir(data_path)
+        if normalize:
+            normalize_str = "True"
+        else:
+            normalize_str = "False"
         conf = {
             "image_dims": 'x'.join(map(str, image_dims)), #image dimensions the Keras model expects.
             "image_mean": ",".join(map(str, train_output.image_mean)),#image mean of training images
-            "image_std": ",".join(map(str, train_output.image_std))#image standard deviation of training images
+            "image_std": ",".join(map(str, train_output.image_std)),#image standard deviation of training images
+            "normalize": normalize_str#true if featurewise centering and normalize
         }
         # labels for the classes this model can predict with integer id the model outputs
         df = pd.DataFrame.from_dict(train_output.labels, orient="index", columns=['id'])
@@ -179,6 +187,10 @@ def _load_pyfunc(path):
     with open(os.path.join(path, "labels.csv"), "r") as f:
         labels = pd.read_csv(f).sort_values(by='id')['class_name'].values.tolist()
 
+    if conf["normalize"] is 'False':
+        normalize = False
+    else:
+        normalize = True
     keras_model_path = os.path.join(path, "keras_model")
     image_dims = np.array([np.int32(x) for x in conf["image_dims"].split("x")])
     image_mean = np.array([np.float32(x) for x in conf["image_mean"].split(",")])
@@ -187,7 +199,7 @@ def _load_pyfunc(path):
     with tf.Graph().as_default() as g:
         with tf.Session().as_default() as sess:
             keras_model = mlflow.keras.load_model(keras_model_path)
-    return KerasImageClassifierPyfunc(g, sess, keras_model, image_dims, image_mean, image_std,
+    return KerasImageClassifierPyfunc(g, sess, keras_model, image_dims, image_mean, image_std, normalize,
                                       labels=labels)
 
 

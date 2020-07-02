@@ -51,6 +51,8 @@ class ArgParser:
                                  help='add vertical flip augmentation')
         self.parser.add_argument('--early_stop', type=self.boolean_string, default=False,
                                  help='apply early stopping to model')
+        self.parser.add_argument('--normalize', type=self.boolean_string, default=True,
+                                 help='apply featurewise normalize and center')
         self.parser.add_argument('--augment_range', type=float, default=0.0, help='range '
                                                                                   'between 0-1 to apply width, shift, and zoom augmentation during training')
         self.parser.add_argument('--k', type=int, default=5, help='1-5 batch interval for look-ahead')
