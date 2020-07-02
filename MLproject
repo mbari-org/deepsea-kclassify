@@ -1,4 +1,4 @@
-name: avedac-kclassify
+name: deepsea-test-kclassify
 
 docker_env:
   image:  mbari/deepsea-kclassify
