@@ -80,6 +80,12 @@ class TransferModel:
                     surgeon.add_job('delete_channels', layer, channels=range(0, num_filters, 2))
             base_model = surgeon.operate()
 
+        # if fine tune at defined, freeze all the layers before the `fine_tune_at` layer
+        # need to do this again as the surgeon unfreezes the layers
+        if fine_tune_at > 0:
+            for layer in base_model.layers[:fine_tune_at]:
+                layer.trainable = False
+
         model_sequential = tf.keras.Sequential([
             base_model,
             tf.keras.layers.GlobalAveragePooling2D(),
