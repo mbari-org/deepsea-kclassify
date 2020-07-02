@@ -329,8 +329,8 @@ class Train:
         print(confusion_matrix(validation_generator.classes, y_pred))
         print('===========Classification==========')
         print(classification_report(validation_generator.classes, y_pred, target_names=labels))
-        return TrainOutput(model, train, image_size, labels, class_size, history, training_generator.mean,
-                           training_generator.std, best_epoch, validation_generator.classes, pred)
+        return TrainOutput(model, train, image_size, labels, class_size, history, train_datagen.mean,
+                           train_datagen.std, best_epoch, validation_generator.classes, pred)
 
 
 def log_params(params):
