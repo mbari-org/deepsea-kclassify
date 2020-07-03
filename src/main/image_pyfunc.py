@@ -144,6 +144,9 @@ def log_model(normalize, train_output, artifact_path):
             normalize_str = "True"
         else:
             normalize_str = "False"
+            train_output.image_mean = [-1, -1, -1]
+            train_output.image_std = [-1, -1, -1]
+
         conf = {
             "image_dims": 'x'.join(map(str, image_dims)), #image dimensions the Keras model expects.
             "image_mean": ",".join(map(str, train_output.image_mean)),#image mean of training images
