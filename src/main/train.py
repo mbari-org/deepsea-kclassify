@@ -280,7 +280,8 @@ class Train:
             validation_generator = train_datagen.flow_from_directory(val_dir,
                                                                      target_size=(image_size, image_size),
                                                                      batch_size=args.batch_size,
-                                                                     class_mode='categorical')
+                                                                     class_mode='categorical',
+                                                                     shuffle=False)
         else:
             # split data into train/val from same directory
             print('Training data:')
@@ -295,7 +296,8 @@ class Train:
                                                                      target_size=(image_size, image_size),
                                                                      batch_size=args.batch_size,
                                                                      class_mode='categorical',
-                                                                     subset='validation')
+                                                                     subset='validation',
+                                                                     shuffle=False)
 
         # compute quantities required for featurewise normalize
         # (std, mean, and principal components if ZCA whitening is applied)
