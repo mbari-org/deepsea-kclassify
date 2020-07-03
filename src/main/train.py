@@ -147,7 +147,6 @@ class Train:
                                       validation_data=validation_generator,
                                       validation_steps=validation_steps,
                                       callbacks=callbacks)
-        model.load_weights(checkpoint_path)
         if early_stop:
             best_epoch = early.best_epoch
         else:
@@ -302,7 +301,7 @@ class Train:
         # (std, mean, and principal components if ZCA whitening is applied)
         print('Calculating normalization statistics')
         train_datagen.fit(train_x)
-        print('Normalize mean: {}, std: {}'.format(train_datagen.mean(), train_datagen.std()))
+        print('Normalize mean: {}, std: {}'.format(train_datagen.mean, train_datagen.std))
         if args.val_tar:
             val_datagen.fit(train_x)
 
@@ -325,14 +324,14 @@ class Train:
             model.load_weights(checkpoint_path)
 
         print('Running prediction on validation data...')
-        pred = model.predict_generator(validation_generator, args.batch_size)
+        validation_generator.reset()
+        pred = model.predict_generator(validation_generator)
         y_pred = np.argmax(pred, axis=1)
-        print('===========Confusion Matrix========')
         print(confusion_matrix(validation_generator.classes, y_pred))
         print('===========Classification==========')
         print(classification_report(validation_generator.classes, y_pred, target_names=labels))
-        return TrainOutput(model, train, image_size, labels, class_size, history, train_datagen.mean(),
-                           train_datagen.std(), best_epoch, validation_generator.classes, pred)
+        return TrainOutput(model, train, image_size, labels, class_size, history, train_datagen.mean,
+                           train_datagen.std, best_epoch, validation_generator.classes, pred)
 
 
 def log_params(params):
