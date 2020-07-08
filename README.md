@@ -11,7 +11,7 @@
 image classifier for training and use in ML workflows with [MLFlow](https://github.com/mlflow/mlflow) 
 and optionally results can be logged to [wandb](https://www.wandb.com/).
 
-It trains images using Tensorflow Keras, with choices of
+It trains images using Tensorflow Keras with choices of
 
 Optimizers
 
