@@ -34,7 +34,7 @@
     "publish": [                                                                                                                                      
         {                                                                                                                                             
             "path": "semantic-release-docker",
-            "name": "mbari/avedac-gpu-kclassify"
+            "name": "mbari/deepsea-gpu-kclassify"
          }                                                                                                                                             
     ] 
 }    

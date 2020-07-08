@@ -1,4 +1,4 @@
-# AVEDAC Keras Image Classifier Changelog
+# DeepSea Keras Image Classifier Changelog
 
 ## [1.0.9](http://bitbucket.org/mbari/avedac-kclassify/compare/v1.0.8...v1.0.9) (2020-06-24)
 
