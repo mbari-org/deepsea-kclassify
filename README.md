@@ -7,8 +7,7 @@
 
 # About
 
-* deepsea-kclassify * is a dockerized implementation of Keras (Keras Tensorflow, not pure Keras) 
-image classifier for training and use in ML workflows with [MLFlow](https://github.com/mlflow/mlflow) 
+* deepsea-kclassify * Tensorflow-Keras image classifier for training and use in ML workflows with [MLFlow](https://github.com/mlflow/mlflow) 
 and optionally results can be logged to [wandb](https://www.wandb.com/).
 
 It trains images using Tensorflow Keras with choices of
