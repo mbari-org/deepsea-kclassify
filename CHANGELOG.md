@@ -1,5 +1,13 @@
 # DeepSea Keras Image Classifier Changelog
 
+## [1.0.1](http://bitbucket.org/mbari/deepsea-kclassify/compare/v1.0.0...v1.0.1) (2020-07-25)
+
+
+### Bug Fixes
+
+* **image_pyfunc.py:** install tf through pip as its not in normal conda channels ([90228a9](http://bitbucket.org/mbari/deepsea-kclassify/commits/90228a958b097d39ff26f4664eb7197e561bc615))
+* **mlproject:** correct bucket name ([5d2750c](http://bitbucket.org/mbari/deepsea-kclassify/commits/5d2750c0fbd56223e4a7053fc22785fb7e95b2e4))
+
 # 1.0.0 (2020-07-08)
 
 
