@@ -1,16 +1,16 @@
 [MBARI](https://www.mbari.org/wp-content/uploads/2014/11/logo-mbari-3b.png)
 <p align="right">
+ <b> <a href="https://github.com/semantic-release/semantic-release"> <img src="https://img.shields.io/badge/%20%20%F0%9F%93%A6%F0%9F%9A%80-semantic--release-e10079.svg" title="semantic-release"/> </a> </b> <br>
     <b> <img src="https://img.shields.io/badge/Supported%20Platforms-Windows%20%7C%20macOS%20%7C%20Linux-green" title="Supported Platforms"/> </b> <br>
     <b> <img src="https://img.shields.io/badge/license-GPL-blue" title="license-GPL"/> </b> <br>
 </p>
 
 # About
 
-* deepsea-kclassify * is a dockerized implementation of Keras (Keras Tensorflow, not pure Keras) 
-image classifier for training and use in ML workflows with [MLFlow](https://github.com/mlflow/mlflow) 
+* deepsea-kclassify * Tensorflow-Keras image classifier for training and use in ML workflows with [MLFlow](https://github.com/mlflow/mlflow) 
 and optionally results can be logged to [wandb](https://www.wandb.com/).
 
-It trains images using Tensorflow Keras, with choices of
+It trains images using Tensorflow Keras with choices of
 
 Optimizers
 
