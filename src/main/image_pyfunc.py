@@ -213,7 +213,7 @@ channels:
   - anaconda
 dependencies:
   - python=={python_version}
-  - tensorflow=={tf_version} 
   - pip:    
     - pillow=={pillow_version}
+    - tensorflow=={tf_version} 
 """
