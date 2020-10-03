@@ -304,6 +304,8 @@ class Train:
         print('Calculating normalization statistics')
         train_datagen.fit(train_x)
         print('Normalize mean: {}, std: {}'.format(train_datagen.mean, train_datagen.std))
+        mean = train_datagen.mean
+        std = train_datagen.std
         if args.val_tar:
             val_datagen.fit(train_x)
 
@@ -332,8 +334,8 @@ class Train:
         print(confusion_matrix(validation_generator.classes, y_pred))
         print('===========Classification==========')
         print(classification_report(validation_generator.classes, y_pred, target_names=labels))
-        return TrainOutput(model, train, image_size, labels, class_size, history, train_datagen.mean,
-                           train_datagen.std, best_epoch, validation_generator.classes, pred)
+        return TrainOutput(model, train, image_size, labels, class_size, history, mean,
+                           std, best_epoch, validation_generator.classes, pred)
 
 
 def log_params(params):
@@ -459,6 +461,8 @@ if __name__ == '__main__':
                     normalize_str = "True"
                 else:
                     normalize_str = "False"
+                # default to not normalize for VGG models
+                normalize_str = "False"
                 # log model and normalize parameters needed for inference
                 params = {'image_size': "{}x{}".format(train_output.image_size, train_output.image_size),
                           "image_mean": ','.join(map(str, train_output.image_mean.tolist())),
