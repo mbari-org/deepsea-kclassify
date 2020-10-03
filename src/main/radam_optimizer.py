@@ -26,8 +26,7 @@ class RAdam(tensorflow.keras.optimizers.Optimizer):
         - [On The Variance Of The Adaptive Learning Rate And Beyond](https://arxiv.org/pdf/1908.03265v1.pdf)
     """
 
-    def __init__(self, lr=0.001, beta_1=0.9, beta_2=0.999,
-                 epsilon=None, decay=0., weight_decay=0., **kwargs):
+    def __init__(self, lr=0.001, beta_1=0.9, beta_2=0.999, epsilon=None, decay=0., weight_decay=0.):
         """
 
         :param lr: float >= 0. Learning rate.
@@ -37,7 +36,7 @@ class RAdam(tensorflow.keras.optimizers.Optimizer):
         :param decay: decay: float >= 0. Learning rate decay over each update.
         :param weight_decay: weight_decay: float >= 0. Weight decay for each param.
         """
-        super(RAdam, self).__init__(**kwargs)
+        super(RAdam, self).__init__(name="RAdam")
         with K.name_scope(self.__class__.__name__):
             self.iterations = K.variable(0, dtype='int64', name='iterations')
             self.lr = K.variable(lr, name='lr')
