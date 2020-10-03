@@ -25,7 +25,6 @@ import base64
 import numpy as np
 import os
 import pandas as pd
-import PIL
 import yaml
 import tensorflow as tf
 from radam_optimizer import RAdam
@@ -35,7 +34,7 @@ import mlflow.keras
 from mlflow.utils import PYTHON_VERSION
 from mlflow.utils.file_utils import TempDir
 
-MAX_BATCH = 1000
+MAX_BATCH = 100
 
 class KerasImageClassifierPyfunc(object):
     """
@@ -100,7 +99,7 @@ class KerasImageClassifierPyfunc(object):
                 image_std = tf.reshape(self._image_std, [1, 1, 3])
                 image -= image_mean # normalize color with mean/std from training images
                 image /= (image_std + 1.e-9)
-            image /= 255.0  # normalize to [0,1] range
+                image /= 255.0  # normalize to [0,1] range
             return image
 
         def decode_img(x):
@@ -190,14 +189,15 @@ def _load_pyfunc(path):
     with open(os.path.join(path, "labels.csv"), "r") as f:
         labels = pd.read_csv(f).sort_values(by='id')['class_name'].values.tolist()
 
-    if conf["normalize"] is 'False':
+    if 'False' in conf["normalize"]:
         normalize = False
     else:
         normalize = True
     keras_model_path = os.path.join(path, "keras_model")
     image_dims = np.array([np.int32(x) for x in conf["image_dims"].split("x")])
-    image_mean = np.array([np.float32(x) for x in conf["image_mean"].split(",")])
-    image_std = np.array([np.float32(x) for x in conf["image_std"].split(",")])
+    image_mean = eval(conf["image_mean"].replace(' ', ','))[0]
+    str = conf["image_std"].replace('  ', ',')
+    image_std = eval(str.replace(' ', ','))[0]
     # NOTE: TensorFlow based models depend on global state (Graph and Session) given by the context.
     with tf.Graph().as_default() as g:
         with tf.Session().as_default() as sess:
@@ -213,7 +213,7 @@ channels:
   - anaconda
 dependencies:
   - python=={python_version}
+  - tensorflow-gpu=={tf_version} 
   - pip:    
     - pillow=={pillow_version}
-    - tensorflow=={tf_version} 
 """
