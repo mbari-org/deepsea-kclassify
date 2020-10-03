@@ -1,5 +1,14 @@
 # DeepSea Keras Image Classifier Changelog
 
+## [1.0.2](http://bitbucket.org/mbari/deepsea-kclassify/compare/v1.0.1...v1.0.2) (2020-10-03)
+
+
+### Bug Fixes
+
+* correct normalize for VGG models ([3e6e929](http://bitbucket.org/mbari/deepsea-kclassify/commits/3e6e929c4f66bb49bc0975d1c9eddbce634238b0))
+* correct normalize logic ([cf6a169](http://bitbucket.org/mbari/deepsea-kclassify/commits/cf6a169de2469ff6767e152a15d12d237266619a))
+* correct per tf version ([290d1fa](http://bitbucket.org/mbari/deepsea-kclassify/commits/290d1fa80044e187deb1e6f9241c4c1f333f1081))
+
 ## [1.0.1](http://bitbucket.org/mbari/deepsea-kclassify/compare/v1.0.0...v1.0.1) (2020-07-25)
 
 
