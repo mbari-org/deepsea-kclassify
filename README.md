@@ -91,7 +91,7 @@ WANDB_API_KEY=<your API key>
 WANDB_USERNAME=<your username>
 WANDB_ENTITY=mbari
 WANDB_MODE=run
-WANDB_GROUP=test
+WANDB_RUN_GROUP=test
 WANDB_PROJECT=test-project
 ```
 Run training

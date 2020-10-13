@@ -410,7 +410,7 @@ def setup_wandb():
     wandb_run = None
     if has_wandb_keys:
         wandb_run = wandb.init(notes=parser.args.notes, job_type='training', entity=os.environ['WANDB_ENTITY'],
-                               project=os.environ['WANDB_PROJECT'], group=os.environ['WANDB_GROUP'])
+                               project=os.environ['WANDB_PROJECT'], group=os.environ['WANDB_RUN_GROUP'])
 
         # adds all of the arguments as config variables
         wandb.config.update(parser.args)

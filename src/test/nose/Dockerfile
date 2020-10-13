@@ -1,4 +1,4 @@
-FROM mbari/avedac-kclassify
+FROM mbari/deepsea-gpu-kclassify
 USER root
 ADD requirements.txt .
 RUN pip install -r requirements.txt
