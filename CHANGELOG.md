@@ -1,5 +1,12 @@
 # DeepSea Keras Image Classifier Changelog
 
+## [1.0.3](http://bitbucket.org/mbari/deepsea-kclassify/compare/v1.0.2...v1.0.3) (2020-10-13)
+
+
+### Bug Fixes
+
+* replace WANDB_RUN with WANDB_RUN_GROUP per latest wandb api ([8df4b61](http://bitbucket.org/mbari/deepsea-kclassify/commits/8df4b61fcbf5c33381441ed6aa33e369ab52b7ad))
+
 ## [1.0.2](http://bitbucket.org/mbari/deepsea-kclassify/compare/v1.0.1...v1.0.2) (2020-10-03)
 
 
