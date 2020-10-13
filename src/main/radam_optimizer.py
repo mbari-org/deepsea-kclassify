@@ -26,7 +26,8 @@ class RAdam(tensorflow.keras.optimizers.Optimizer):
         - [On The Variance Of The Adaptive Learning Rate And Beyond](https://arxiv.org/pdf/1908.03265v1.pdf)
     """
 
-    def __init__(self, lr=0.001, beta_1=0.9, beta_2=0.999, epsilon=None, decay=0., weight_decay=0.):
+    def __init__(self, lr=0.001, beta_1=0.9, beta_2=0.999,
+                 epsilon=None, decay=0., weight_decay=0., **kwargs):
         """
 
         :param lr: float >= 0. Learning rate.
@@ -36,10 +37,10 @@ class RAdam(tensorflow.keras.optimizers.Optimizer):
         :param decay: decay: float >= 0. Learning rate decay over each update.
         :param weight_decay: weight_decay: float >= 0. Weight decay for each param.
         """
-        super(RAdam, self).__init__(name="RAdam")
+        super(RAdam, self).__init__(name='RAdam', **kwargs)
         with K.name_scope(self.__class__.__name__):
             self.iterations = K.variable(0, dtype='int64', name='iterations')
-            self.lr = K.variable(lr, name='lr')
+            self.learning_rate = K.variable(lr, name='learning_rate')
             self.beta_1 = K.variable(beta_1, name='beta_1')
             self.beta_2 = K.variable(beta_2, name='beta_2')
             self.decay = K.variable(decay, name='decay')
@@ -54,7 +55,7 @@ class RAdam(tensorflow.keras.optimizers.Optimizer):
         grads = self.get_gradients(loss, params)
         self.updates = [K.update_add(self.iterations, 1)]
 
-        lr = self.lr
+        lr = self.learning_rate
         if self.initial_decay > 0:
             lr = lr * (1. / (1. + self.decay * K.cast(self.iterations, K.dtype(self.decay))))
 
@@ -62,8 +63,6 @@ class RAdam(tensorflow.keras.optimizers.Optimizer):
 
         ms = [K.zeros(K.int_shape(p), dtype=K.dtype(p), name='m_' + str(i)) for (i, p) in enumerate(params)]
         vs = [K.zeros(K.int_shape(p), dtype=K.dtype(p), name='v_' + str(i)) for (i, p) in enumerate(params)]
-
-        self.weights = [self.iterations] + ms + vs
 
         beta_1_t = K.pow(self.beta_1, t)
         beta_2_t = K.pow(self.beta_2, t)
@@ -102,7 +101,7 @@ class RAdam(tensorflow.keras.optimizers.Optimizer):
 
     def get_config(self):
         config = {
-            'lr': float(K.get_value(self.lr)),
+            'learning_rate': float(K.get_value(self.learning_rate)),
             'beta_1': float(K.get_value(self.beta_1)),
             'beta_2': float(K.get_value(self.beta_2)),
             'decay': float(K.get_value(self.decay)),
