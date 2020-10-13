@@ -400,7 +400,7 @@ def setup_wandb():
     :return: wandb run object
     """
     keys = ['WANDB_ENTITY', 'WANDB_USERNAME', 'WANDB_API_KEY', 'WANDB_PROJECT',
-            'WANDB_GROUP', ]
+            'WANDB_RUN_GROUP', ]
     has_wandb_keys = True
     for key in keys:
         if key not in env.keys():
