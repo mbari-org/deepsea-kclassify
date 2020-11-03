@@ -29,6 +29,7 @@ import yaml
 import tensorflow as tf
 from radam_optimizer import RAdam
 from lookahead import Lookahead
+import PIL
 import mlflow
 import mlflow.keras
 from mlflow.utils import PYTHON_VERSION
@@ -96,10 +97,12 @@ class KerasImageClassifierPyfunc(object):
             image = tf.image.resize(image, self._image_dims)
             if self._normalize:
                 image_mean = tf.reshape(self._image_mean, [1, 1, 3])
+                image_mean_ = tf.reverse(image_mean, axis=[0])
                 image_std = tf.reshape(self._image_std, [1, 1, 3])
-                image -= image_mean # normalize color with mean/std from training images
-                image /= (image_std + 1.e-9)
-                image /= 255.0  # normalize to [0,1] range
+                image_std_ = tf.reverse(image_std, axis=[0])
+                image -= image_mean_ # normalize color with mean/std from training images
+                image /= (image_std_ + 1.e-9)
+            image /= 255.0  # normalize to [0,1] range
             return image
 
         def decode_img(x):
@@ -120,7 +123,7 @@ class KerasImageClassifierPyfunc(object):
                 data = tf.constant(images.values)
                 dataset = tf.data.Dataset.from_tensor_slices((data))
                 dataset = dataset.map(decode_resize).batch(max_batch)
-                iterator = tf.compat.v1.data.make_one_shot_iterator(dataset)
+                iterator = dataset.make_one_shot_iterator()
                 next_image_batch = iterator.get_next()
                 return self._model.predict(next_image_batch, steps=1)
 
@@ -165,6 +168,7 @@ def log_model(normalize, train_output, artifact_path):
             f.write(conda_env_template.format(python_version=PYTHON_VERSION,
                                               tf_name=tf.__name__,  # can have optional -gpu suffix
                                               tf_version=tf.__version__,
+                                              mlflow_version=mlflow.__version__,
                                               pillow_version=PIL.__version__))
 
         mlflow.keras.save_model(keras_model, path= os.path.join(data_path, "keras_model"),
@@ -196,11 +200,12 @@ def _load_pyfunc(path):
     keras_model_path = os.path.join(path, "keras_model")
     image_dims = np.array([np.int32(x) for x in conf["image_dims"].split("x")])
     image_mean = eval(conf["image_mean"].replace(' ', ','))[0]
-    str = conf["image_std"].replace('  ', ',')
-    image_std = eval(str.replace(' ', ','))[0]
+    s = conf["image_std"].replace('  ', ',')
+    image_std = eval(s.replace(' ', ','))[0]
     # NOTE: TensorFlow based models depend on global state (Graph and Session) given by the context.
+    #os.environ['CUDA_VISIBLE_DEVICES'] = "0"
     with tf.Graph().as_default() as g:
-        with tf.compat.v1.Session().as_default() as sess:
+        with tf.Session().as_default() as sess:
             keras_model = mlflow.keras.load_model(keras_model_path)
     return KerasImageClassifierPyfunc(g, sess, keras_model, image_dims, image_mean, image_std, normalize,
                                       labels=labels)
@@ -213,7 +218,8 @@ channels:
   - anaconda
 dependencies:
   - python=={python_version}
-  - tensorflow-gpu=={tf_version} 
+  - tensorflow=={tf_version} 
+  - mlflow=={mlflow_version} 
   - pip:    
     - pillow=={pillow_version}
 """
