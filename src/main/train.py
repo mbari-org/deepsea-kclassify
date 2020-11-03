@@ -137,6 +137,10 @@ class Train:
         if early_stop:
             callbacks += [early]
 
+        if optimizer == 'adam':
+            callbacks.append(tf.keras.callbacks.ReduceLROnPlateau(monitor='loss', factor=0.1, patience=2, \
+                        verbose=1, mode='auto', min_delta=0.0001, cooldown=0, min_lr=0))
+
         if os.path.exists(checkpoint_path):
             print('Loading model weights from {}'.format(checkpoint_path))
             model.load_weights(checkpoint_path)
