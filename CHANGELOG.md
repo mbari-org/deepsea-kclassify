@@ -1,5 +1,14 @@
 # DeepSea Keras Image Classifier Changelog
 
+## [1.0.5](http://bitbucket.org/mbari/deepsea-kclassify/compare/v1.0.4...v1.0.5) (2020-11-03)
+
+
+### Bug Fixes
+
+* bGR to RGB color conversion, added PIL library and tf2 iterator ([2c13fbe](http://bitbucket.org/mbari/deepsea-kclassify/commits/2c13fbecb1904ea563466b56e30a56ea0657d718))
+* correct tf2 tensor metric reference ([5908809](http://bitbucket.org/mbari/deepsea-kclassify/commits/590880907f98af9bb8286b73c72d57df3631f8ed))
+* fixed merge conflict ([ec77542](http://bitbucket.org/mbari/deepsea-kclassify/commits/ec775426e3f3d64ad2568303b003630f8849ecc3))
+
 ## [1.0.4](http://bitbucket.org/mbari/deepsea-kclassify/compare/v1.0.3...v1.0.4) (2020-11-03)
 
 
