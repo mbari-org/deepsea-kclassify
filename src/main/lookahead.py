@@ -63,7 +63,7 @@ class Lookahead(object):
                     copy_updates.append(K.update(p, q))
                 # Gets loss and metrics. Updates weights at each call.
                 fast_train_function = K.function(
-                    inputs, [model.total_loss] + model._compile_metrics_tensors['categorical_accuracy'],
+                    inputs, [model.total_loss] + model._compile_metrics_tensors['categorial_accuracy'],
                     updates=fast_updates,
                     name='fast_train_function',
                     **model._function_kwargs)
