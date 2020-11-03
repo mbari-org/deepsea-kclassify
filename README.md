@@ -53,7 +53,7 @@ with runs
  - Python version 3.6.1 
 - minio/AWS storage
 - (optional) W&B account 
-## Running
+## Running locally
 Build docker image for GPU training.
 ```bash
 ./build.sh GPU
@@ -73,17 +73,17 @@ virtualenv --python=/usr/bin/python3.6 .venv
 source .venv/bin/activate
 pip install -r requirements.txt
 ```
-Upload data into s3 buckets for testing training and inference, e.g.
-```
-python src/test/upload.py
-```
 Create .env file with test environment parameters e.g.
 ```
 AWS_DEFAULT_REGION=us-east-1
-AWS_ACCESS_KEY_ID=<your access key>
-AWS_SECRET_ACCESS_KEY=<your secret key>
+AWS_ACCESS_KEY_ID=<your access key> # as defined in test.env
+AWS_SECRET_ACCESS_KEY=<your secret key>   # as defined in test.env
 MLFLOW_TRACKING_URI=<your tracking URI, e.g. http://localhost:5000>
-(for local testing only - not needed for AWS) MLFLOW_S3_ENDPOINT_URL=<your S3 endpoint for minio only, e.g. http://localhost:9000>
+(for local testing only - not needed for AWS) MLFLOW_S3_ENDPOINT_URL=<your S3 endpoint for minio only, e.g. http://localhost:9001>
+```
+Upload data into s3 buckets to the minio server, e.g.
+```
+python src/test/upload.py
 ```
 If using wandb also, add
 ```

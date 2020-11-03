@@ -16,8 +16,17 @@ These models are the ones supported in this code.
 @license: __license__
 '''
 
+import tensorflow as tf
+
 MODEL_DICT = {}
 
+efficientnetB0 = dict(
+    image_size = 224,
+    model_instance = "tf.keras.applications.EfficientNetB2",
+    fine_tune_at = -1,
+    slim = False,
+    has_depthwise_layers = False
+)
 densenet201 = dict(
     image_size = 224,
     model_instance = "tf.keras.applications.densenet.DenseNet201",
@@ -90,6 +99,8 @@ mobilenetv2 = dict(
     slim = False,
     has_depthwise_layers = True
 )
+
+MODEL_DICT["efficientnetB0"] = efficientnetB0
 MODEL_DICT["densenet201"] = densenet201
 MODEL_DICT["xception"] = xception
 MODEL_DICT["inceptionv3"] = inceptionv3

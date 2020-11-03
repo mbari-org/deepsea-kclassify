@@ -452,7 +452,7 @@ if __name__ == '__main__':
             run_id = uuid.uuid4().hex
             has_wandb = False
 
-        with tf.Session():
+        with tf.compat.v1.Session():
             with mlflow.start_run(run_name=run_id):
                 mlflow.log_param('run_name', run_id)
                 output_dir = tempfile.mkdtemp()

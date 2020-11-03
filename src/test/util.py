@@ -26,15 +26,6 @@ from urllib.parse import urlparse
 import tempfile
 from boto3.s3.transfer import TransferConfig
 
-
-class ProgressPercentage(object):
-    def __init__(self, filename):
-        self._filename = filename
-        self._size = float(os.path.getsize(filename))
-        self._seen_so_far = 0
-        self._lock = threading.Lock()
-
-
 def unpack(out_dir, tar_file):
     if os.path.isfile(tar_file) and 'tar.gz' in tar_file and 's3' not in tar_file:
         print('Unpacking {}'.format(tar_file))
@@ -113,12 +104,9 @@ def upload_s3(target_bucket, target_file, endpoint_url=None):
     config = TransferConfig(multipart_threshold=1024 * 25, max_concurrency=10, multipart_chunksize=1024 * 25,
                             use_threads=True)
     if endpoint_url:
-        # s3 = boto3.resource('s3', config=Config(signature_version='s3v4'),endpoint_url=endpoint_url)
-        # s3 = boto3.client('s3', endpoint_url=endpoint_url, connect_timeout=60, write_timeout=120)
+        s3 = boto3.resource('s3', config=Config(signature_version='s3v4'),endpoint_url=endpoint_url)
         key_path = f'{bucket_name}/{os.path.basename(target_file)}'
-        # s3.meta.client.upload_file(target_file, bucket_name, key_path, Config=config, Callback=ProgressPercentage(target_file))
-        s3.meta.client.upload_file('/data/catsdogs.tar.gz', '/test', '/test/catsdogs.tar.gz', Config=config,
-                                   Callback=ProgressPercentage('/data/catsdogs.tar.gz'))
+        s3.meta.client.upload_file(target_file, bucket_name, key_path, Config=config)
     else:
         s3 = boto3.resource('s3')
     '''try:

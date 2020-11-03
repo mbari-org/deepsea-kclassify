@@ -15,11 +15,11 @@ RAdam Optimizer
 @license: __license__
 '''
 
-import tensorflow
+import tensorflow as tf
 from tensorflow.python.keras import backend as K
 
 
-class RAdam(tensorflow.keras.optimizers.Optimizer):
+class RAdam(tf.keras.optimizers.Optimizer):
     """RAdam optimizer.
     # References
         - [Adam - A Method for Stochastic Optimization](https://arxiv.org/abs/1412.6980v8)

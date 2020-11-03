@@ -120,7 +120,7 @@ class KerasImageClassifierPyfunc(object):
                 data = tf.constant(images.values)
                 dataset = tf.data.Dataset.from_tensor_slices((data))
                 dataset = dataset.map(decode_resize).batch(max_batch)
-                iterator = dataset.make_one_shot_iterator()
+                iterator = tf.compat.v1.data.make_one_shot_iterator(dataset)
                 next_image_batch = iterator.get_next()
                 return self._model.predict(next_image_batch, steps=1)
 
@@ -200,7 +200,7 @@ def _load_pyfunc(path):
     image_std = eval(str.replace(' ', ','))[0]
     # NOTE: TensorFlow based models depend on global state (Graph and Session) given by the context.
     with tf.Graph().as_default() as g:
-        with tf.Session().as_default() as sess:
+        with tf.compat.v1.Session().as_default() as sess:
             keras_model = mlflow.keras.load_model(keras_model_path)
     return KerasImageClassifierPyfunc(g, sess, keras_model, image_dims, image_mean, image_std, normalize,
                                       labels=labels)
