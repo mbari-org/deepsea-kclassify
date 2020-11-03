@@ -1,5 +1,12 @@
 # DeepSea Keras Image Classifier Changelog
 
+## [1.0.4](http://bitbucket.org/mbari/deepsea-kclassify/compare/v1.0.3...v1.0.4) (2020-11-03)
+
+
+### Performance Improvements
+
+* migrated to latest tensorflor 2.3.1 ([71ff09f](http://bitbucket.org/mbari/deepsea-kclassify/commits/71ff09f1e7b159fe041aa00f90732e52bdcc710a))
+
 ## [1.0.3](http://bitbucket.org/mbari/deepsea-kclassify/compare/v1.0.2...v1.0.3) (2020-10-13)
 
 
